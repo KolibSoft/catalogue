@@ -11,13 +11,13 @@ public static class PageUtils
         var pageCount = itemsCount / pageSize;
         if (itemsCount % pageSize > 0) pageCount += 1;
         items = items.Skip(pageIndex * pageSize).Take(pageSize);
-        var result = new Page<T>
+        var page = new Page<T>
         {
-            Items = items,
+            Items = items.ToArray(),
             PageIndex = pageIndex,
             PageCount = pageCount
         };
-        return result;
+        return page;
     }
 
 }
