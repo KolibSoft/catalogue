@@ -61,15 +61,15 @@ class CollectionCatalogue {
     async pageAsync(filters = null) {
         this.errors = [];
         let items = this.collection;
+        if (filters?.changesAt) items = items.filter(x => x.updatedAt >= filters.changesAt);
         if (filters?.ids?.length) items = items.filter(x => filters.ids.includes(x.id));
-        if (filters != null) items = this.queryItems(items, filters);
+        items = this.queryItems(items, filters);
         let page = PageUtils.getPage(items, filters?.pageIndex ?? 0, filters?.pageSize ?? CatalogueStatics.DefaultChunkSize);
         return new Result({
             data: new Page({
                 items: page.items,
                 pageIndex: page.pageIndex,
-                pageCount: page.pageCount,
-                changesAt: new Date()
+                pageCount: page.pageCount
             })
         });
     }

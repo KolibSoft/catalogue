@@ -23,7 +23,7 @@ public class DatabaseCatalogue<TItem, TFilters> : ICatalogueConnector<TItem, TFi
     {
         Errors.Clear();
         var items = DbSet.AsQueryable();
-        if (filters?.UpdatesAt != null) items = items.Where(x => x.UpdatedAt >= filters.UpdatesAt);
+        if (filters?.ChangesAt != null) items = items.Where(x => x.UpdatedAt >= filters.ChangesAt);
         if (filters?.Ids?.Any() == true) items = items.Where(x => filters.Ids.Contains(x.Id));
         items = QueryItems(items, filters);
         var page = items.GetPage(filters?.PageIndex ?? 0, filters?.PageSize ?? CatalogueStatics.DefaultChunkSize);

@@ -68,17 +68,17 @@ class DatabaseCatalogue {
     async pageAsync(filters = null) {
         this.errors = [];
         let items = await this.dbset.filter(item => {
+            if (filters?.changesAt && item.updatedAt < filters.changesAt) return false;
             if (filters?.ids?.length && !(filters.ids.includes(item.id))) return false;
             return true;
         });
-        if (filters != null) items = this.queryItems(items, filters);
+        items = this.queryItems(items, filters);
         let page = PageUtils.getPage(items, filters?.pageIndex ?? 0, filters?.pageSize ?? CatalogueStatics.DefaultChunkSize);
         return new Result({
             data: new Page({
                 items: page.items,
                 pageIndex: page.pageIndex,
-                pageCount: page.pageCount,
-                changesAt: new Date()
+                pageCount: page.pageCount
             })
         });
     }
