@@ -7,5 +7,6 @@ public class CatalogueFilters : IPageFilters, IItemFilters
     public int? PageIndex { get; init; }
     public int? PageSize { get; init; }
     public Guid[]? Ids { get; init; }
+    public DateTime? UpdatesAt { get; init; }
     public string? Hint { get; init; }
 }

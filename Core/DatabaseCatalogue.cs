@@ -14,7 +14,7 @@ public class DatabaseCatalogue<TItem, TFilters> : ICatalogueConnector<TItem, TFi
     public ICollection<string> Errors { get; } = new List<string>();
     public virtual bool Available => DbContext.Database.CanConnect();
 
-    protected virtual IQueryable<TItem> QueryItems(IQueryable<TItem> items, TFilters filters) => items;
+    protected virtual IQueryable<TItem> QueryItems(IQueryable<TItem> items, TFilters? filters = default) => items;
     protected virtual bool ValidateInsert(TItem item) => true;
     protected virtual bool ValidateUpdate(TItem item) => true;
     protected virtual bool ValidateDelete(TItem item) => true;
@@ -23,8 +23,9 @@ public class DatabaseCatalogue<TItem, TFilters> : ICatalogueConnector<TItem, TFi
     {
         Errors.Clear();
         var items = DbSet.AsQueryable();
+        if (filters?.UpdatesAt != null) items = items.Where(x => x.UpdatedAt >= filters.UpdatesAt);
         if (filters?.Ids?.Any() == true) items = items.Where(x => filters.Ids.Contains(x.Id));
-        if (filters != null) items = QueryItems(items, filters);
+        items = QueryItems(items, filters);
         var page = items.GetPage(filters?.PageIndex ?? 0, filters?.PageSize ?? CatalogueStatics.DefaultChunkSize);
         return page;
     });
