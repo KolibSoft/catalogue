@@ -36,7 +36,7 @@ class CatalogueService {
      */
     async pageAsync(filters = null) {
         let uri = `${this.uri}${QueryStringSerializer.serialize(filters)}`;
-        let response = await fetch(uri, {
+        let response = await this.fetch(uri, {
             method: "GET"
         });
         let result = await ResultUtils.handleResult(response);
@@ -49,7 +49,7 @@ class CatalogueService {
      */
     async getAsync(id) {
         let uri = `${this.uri}/${id}`;
-        let response = await fetch(uri, {
+        let response = await this.fetch(uri, {
             method: "GET"
         });
         let result = await ResultUtils.handleResult(response);
@@ -62,7 +62,7 @@ class CatalogueService {
      */
     async insertAsync(item) {
         let uri = `${this.uri}`;
-        let response = await fetch(uri, {
+        let response = await this.fetch(uri, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -80,7 +80,7 @@ class CatalogueService {
      */
     async updateAsync(id, item) {
         let uri = `${this.uri}/${id}`;
-        let response = await fetch(uri, {
+        let response = await this.fetch(uri, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json"
@@ -97,7 +97,7 @@ class CatalogueService {
      */
     async deleteAsync(id) {
         let uri = `${this.uri}/${id}`;
-        let response = await fetch(uri, {
+        let response = await this.fetch(uri, {
             method: "DELETE"
         });
         let result = await ResultUtils.handleResult(response);
