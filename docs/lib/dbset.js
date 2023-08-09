@@ -6,15 +6,16 @@ import { DbContext } from "./dbcontext.js";
 class DbSet {
 
     /** @type {DbContext} */
-    dbContext;
+    #dbContext;
 
     /** @type {string} */
-    name;
+    #name;
 
-    constructor(dbContext, name) {
-        this.dbContext = dbContext;
-        this.name = name;
-    }
+    /** @type {DbContext} */
+    get dbContext() { return this.#dbContext; }
+
+    /** @type {string} */
+    get name() { return this.#name; }
 
     /**
      * @param {(item: T) => boolean} selector 
@@ -22,9 +23,9 @@ class DbSet {
      */
     filter(selector) {
         return new Promise(async (resolve, reject) => {
-            let idb = await this.dbContext.open();
-            let transaction = idb.transaction([this.name], "readwrite");
-            let store = transaction.objectStore(this.name);
+            let idb = await this.#dbContext.open();
+            let transaction = idb.transaction([this.#name], "readwrite");
+            let store = transaction.objectStore(this.#name);
             let request = store.openCursor();
             let items = [];
             request.onsuccess = event => {
@@ -53,9 +54,9 @@ class DbSet {
      */
     get(id) {
         return new Promise(async (resolve, reject) => {
-            let idb = await this.dbContext.open();
-            let transaction = idb.transaction([this.name], "readwrite");
-            let store = transaction.objectStore(this.name);
+            let idb = await this.#dbContext.open();
+            let transaction = idb.transaction([this.#name], "readwrite");
+            let store = transaction.objectStore(this.#name);
             let request = store.get(id);
             request.onsuccess = event => {
                 let item = event.target.result;
@@ -75,9 +76,9 @@ class DbSet {
      */
     add(item) {
         return new Promise(async (resolve, reject) => {
-            let idb = await this.dbContext.open();
-            let transaction = idb.transaction([this.name], "readwrite");
-            let store = transaction.objectStore(this.name);
+            let idb = await this.#dbContext.open();
+            let transaction = idb.transaction([this.#name], "readwrite");
+            let store = transaction.objectStore(this.#name);
             let request = store.add(item);
             request.onsuccess = event => {
                 idb.close();
@@ -96,9 +97,9 @@ class DbSet {
      */
     update(item) {
         return new Promise(async (resolve, reject) => {
-            let idb = await this.dbContext.open();
-            let transaction = idb.transaction([this.name], "readwrite");
-            let store = transaction.objectStore(this.name);
+            let idb = await this.#dbContext.open();
+            let transaction = idb.transaction([this.#name], "readwrite");
+            let store = transaction.objectStore(this.#name);
             let request = store.put(item);
             request.onsuccess = event => {
                 idb.close();
@@ -117,9 +118,9 @@ class DbSet {
      */
     remove(id) {
         return new Promise(async (resolve, reject) => {
-            let idb = await this.dbContext.open();
-            let transaction = idb.transaction([this.name], "readwrite");
-            let store = transaction.objectStore(this.name);
+            let idb = await this.#dbContext.open();
+            let transaction = idb.transaction([this.#name], "readwrite");
+            let store = transaction.objectStore(this.#name);
             let request = store.delete(id);
             request.onsuccess = event => {
                 idb.close();
@@ -130,6 +131,15 @@ class DbSet {
                 reject(event.target.error);
             };
         });
+    }
+
+    /**
+     * @param {DbContext} dbContext 
+     * @param {string} name 
+     */
+    constructor(dbContext, name) {
+        this.#dbContext = dbContext;
+        this.#name = name;
     }
 
 }

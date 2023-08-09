@@ -3,31 +3,34 @@ import { DbSet } from "./dbset.js";
 class DbContext {
 
     /** @type {string} */
-    name;
+    #name;
 
     /** @type {number} */
-    version;
+    #version;
 
     /** @type {IDBDatabase} */
-    database;
+    #database;
 
-    constructor(name, version) {
-        this.name = name;
-        this.version = version;
-        this.database = null;
-    }
+    /** @type {string} */
+    get name() { return this.#name; }
+
+    /** @type {number} */
+    get version() { return this.#version; }
+
+    /** @type {IDBDatabase} */
+    get database() { return this.#database; }
 
     /**
      * @returns {Promise<IDBDatabase>}
      */
     open() {
         return new Promise((resolve, reject) => {
-            let request = indexedDB.open(this.name, this.version);
+            let request = indexedDB.open(this.#name, this.#version);
             request.onupgradeneeded = event => {
                 this.onUpgrade(event.target.result);
             };
             request.onsuccess = event => {
-                this.database = event.target.result;
+                this.#database = event.target.result;
                 resolve(event.target.result)
             };
             request.onerror = event => {
@@ -37,9 +40,9 @@ class DbContext {
     }
 
     close() {
-        if (this.database) {
-            this.database.close();
-            this.database = null;
+        if (this.#database) {
+            this.#database.close();
+            this.#database = null;
         }
     }
 
@@ -56,6 +59,16 @@ class DbContext {
      * @param {IDBDatabase} database 
      */
     onUpgrade(database) { }
+
+    /**
+     * @param {string} name 
+     * @param {number} version 
+     */
+    constructor(name, version) {
+        this.#name = name;
+        this.#version = version;
+        this.#database = null;
+    }
 
 }
 

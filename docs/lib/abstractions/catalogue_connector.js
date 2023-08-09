@@ -3,6 +3,7 @@ import { Page } from "../page.js";
 import { Result } from "../result.js";
 
 /**
+ * @interface
  * @template TItem 
  * @template TFilters
  */

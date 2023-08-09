@@ -1,15 +1,13 @@
-const DefaultChunkSize = 16;
-const NoCode = "NO_CODE";
-const RepeatedItem = "REPEATED_ITEM";
-const NoItem = "NO_ITEM";
-const InvalidId = "INVALID_ID";
-const UsedItem = "USED_ITEM";
+class CatalogueStatics {
+    static get NoGuid() { return "00000000-0000-0000-0000-000000000000"; }
+    static get DefaultChunkSize() { return 16; }
+    static get NoCode() { return "NO_CODE"; }
+    static get RepeatedItem() { return "REPEATED_ITEM"; }
+    static get NoItem() { return "NO_ITEM"; }
+    static get InvalidId() { return "INVALID_ID"; }
+    static get UsedItem() { return "USED_ITEM"; }
+}
 
 export {
-    DefaultChunkSize,
-    NoCode,
-    RepeatedItem,
-    NoItem,
-    InvalidId,
-    UsedItem
+    CatalogueStatics
 }

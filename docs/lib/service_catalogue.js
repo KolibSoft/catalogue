@@ -2,7 +2,7 @@ import { CatalogueFilters } from "./catalogue_filters.js";
 import { Page } from "./page.js";
 import { Result } from "./result.js";
 import { CatalogueConnector } from "./abstractions/catalogue_connector.js";
-import * as CatalogueConnectorUtils from "./utils/catalogue_connector_utils.js";
+import { CatalogueConnectorUtils } from "./utils/catalogue_connector_utils.js";
 
 
 /**
@@ -20,18 +20,6 @@ class ServiceCatalogue {
 
     /** @type {{}} */
     changes;
-
-    /**
-     * 
-     * @param {CatalogueConnector<TItem, TFilters>} localConnector 
-     * @param {CatalogueConnector<TItem, TFilters>} remoteConnector 
-     * @param {Set<Change>} changes 
-     */
-    constructor(localConnector, remoteConnector, changes) {
-        this.localConnector = localConnector;
-        this.remoteConnector = remoteConnector;
-        this.changes = changes;
-    }
 
     /** @returns {boolean} */
     get available() { return this.remoteConnector.available || this.localConnector.available; }
@@ -121,6 +109,18 @@ class ServiceCatalogue {
         result = await this.localConnector.deleteAsync(id);
         if (result.data == true) this.changes[id] = null;
         return result;
+    }
+
+    /**
+     * 
+     * @param {CatalogueConnector<TItem, TFilters>} localConnector 
+     * @param {CatalogueConnector<TItem, TFilters>} remoteConnector 
+     * @param {Set<Change>} changes 
+     */
+    constructor(localConnector, remoteConnector, changes) {
+        this.localConnector = localConnector;
+        this.remoteConnector = remoteConnector;
+        this.changes = changes;
     }
 
 }

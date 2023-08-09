@@ -7,12 +7,12 @@ import { DbContext } from "./dbcontext.js";
 import { DbSet } from "./dbset.js";
 import { Item } from "./abstractions/item.js";
 import { Result } from "./result.js";
-import * as QueryStringSerializer from "./querystring_serializer.js";
+import { QueryStringSerializer } from "./querystring_serializer.js";
 import { CatalogueService } from "./catalogue_service.js";
 import { ServiceCatalogue } from "./service_catalogue.js";
-import * as ResultUtils from "./utils/result_utils.js";
-import * as PageUtils from "./utils/page_utils.js";
-import * as CatalogueConnectorUtils from "./utils/catalogue_connector_utils.js";
+import { ResultUtils } from "./utils/result_utils.js";
+import { PageUtils } from "./utils/page_utils.js";
+import { CatalogueConnectorUtils } from "./utils/catalogue_connector_utils.js";
 
 export {
     Result,

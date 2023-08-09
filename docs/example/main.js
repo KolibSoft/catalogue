@@ -1,10 +1,8 @@
 import * as Catalogue from "../lib/main.js"
 
-class SettingsContext extends Catalogue.DbContext {
+class SettingsModel extends Catalogue.Item { }
 
-    constructor(name, version) {
-        super(name, version)
-    }
+class SettingsContext extends Catalogue.DbContext {
 
     /**
      * @param {IDBDatabase} database
@@ -13,6 +11,10 @@ class SettingsContext extends Catalogue.DbContext {
         database.createObjectStore("settings", {
             keyPath: "id",
         });
+    }
+
+    constructor(name, version) {
+        super(name, version)
     }
 
 }
@@ -31,8 +33,8 @@ console.log(Catalogue.QueryStringSerializer.serialize({
 
 let uri = "http://localhost:5033/settings";
 let settingsContext = new SettingsContext("database", 2);
-let localConnector = new Catalogue.DatabaseCatalogue(settingsContext, "settings");
-let remoteConnector = new Catalogue.CatalogueService((a, b) => fetch(a, b), uri);
+let localConnector = new Catalogue.DatabaseCatalogue(json => new SettingsModel(json), settingsContext, "settings");
+let remoteConnector = new Catalogue.CatalogueService(json => new SettingsModel(json), (a, b) => fetch(a, b), uri);
 let changes = JSON.parse(localStorage.changes ?? "{}");
 console.log(changes);
 

@@ -1,9 +1,9 @@
 import { CatalogueConnector } from "./abstractions/catalogue_connector.js";
 import { CatalogueFilters } from "./catalogue_filters.js";
 import { Page } from "./page.js";
-import * as CatalogueStatics from "./catalogue_statics.js";
+import { CatalogueStatics } from "./catalogue_statics.js";
 import { Result } from "./result.js";
-import * as PageUtils from "./utils/page_utils.js";
+import { PageUtils } from "./utils/page_utils.js";
 
 /**
  * @template TItem 
@@ -13,18 +13,16 @@ import * as PageUtils from "./utils/page_utils.js";
 class CollectionCatalogue {
 
     /** @type {TItem[]} */
-    collection;
+    #collection;
 
     /** @type {string[]} */
-    errors;
+    #errors;
 
-    /**
-     * @param {TItem[]} collection 
-     */
-    constructor(collection) {
-        this.collection = collection;
-        this.errors = [];
-    }
+    /** @returns {TItem[]} */
+    get collection() { return this.#collection; }
+
+    /** @returns {string[]} */
+    get errors() { return this.#errors; }
 
     /** @returns {boolean} */
     get available() { return true; }
@@ -59,8 +57,8 @@ class CollectionCatalogue {
      * @returns {Promise<Result<Page<TItem>>>}
      */
     async pageAsync(filters = null) {
-        this.errors = [];
-        let items = this.collection;
+        this.#errors = [];
+        let items = this.#collection;
         if (filters?.changesAt) items = items.filter(x => x.updatedAt >= filters.changesAt);
         if (filters?.ids?.length) items = items.filter(x => filters.ids.includes(x.id));
         items = this.queryItems(items, filters);
@@ -79,8 +77,8 @@ class CollectionCatalogue {
      * @returns {Promise<Result<TItem>>}
      */
     async getAsync(id) {
-        this.errors = [];
-        let item = this.collection.find(x => x.id == id);
+        this.#errors = [];
+        let item = this.#collection.find(x => x.id == id);
         return new Result({
             data: item
         });
@@ -91,14 +89,14 @@ class CollectionCatalogue {
      * @returns {Promise<Result<string>>}
      */
     async insertAsync(item) {
-        this.errors = [];
-        if (item.validate && !item.validate(this.errors)) return new Result({ errors: this.errors });
-        if (this.collection.some(x => x.id == item.id)) {
-            this.errors.push(CatalogueStatics.RepeatedItem);
-            return new Result({ errors: this.errors });
+        this.#errors = [];
+        if (item.validate && !item.validate(this.#errors)) return new Result({ errors: this.#errors });
+        if (this.#collection.some(x => x.id == item.id)) {
+            this.#errors.push(CatalogueStatics.RepeatedItem);
+            return new Result({ errors: this.#errors });
         }
-        if (!this.validateInsert(item)) return new Result({ errors: this.errors });
-        this.collection.push(item);
+        if (!this.validateInsert(item)) return new Result({ errors: this.#errors });
+        this.#collection.push(item);
         return new Result({ data: item.id });
     }
 
@@ -108,15 +106,15 @@ class CollectionCatalogue {
      * @returns {Promise<Result<boolean>>}
      */
     async updateAsync(id, item) {
-        this.errors = [];
-        if (item.validate && !item.validate(this.errors)) return new Result({ errors: this.errors });
-        let original = this.collection.find(x => x.id == item.id);
+        this.#errors = [];
+        if (item.validate && !item.validate(this.#errors)) return new Result({ errors: this.#errors });
+        let original = this.#collection.find(x => x.id == item.id);
         if (original == null) {
-            this.errors.push(CatalogueStatics.NoItem);
-            return new Result({ errors: this.errors });
+            this.#errors.push(CatalogueStatics.NoItem);
+            return new Result({ errors: this.#errors });
         }
         if (item.UpdatedAt < original.UpdatedAt) return new Result({ data: false });
-        if (!this.validateUpdate(item)) return new Result({ errors: this.errors });
+        if (!this.validateUpdate(item)) return new Result({ errors: this.#errors });
         original.update(item);
         return new Result({ data: true });
     }
@@ -126,15 +124,23 @@ class CollectionCatalogue {
      * @returns {Promise<Result<boolean>>}
      */
     async deleteAsync(id) {
-        this.errors = [];
-        let item = this.collection.find(x => x.id == item.id);
+        this.#errors = [];
+        let item = this.#collection.find(x => x.id == item.id);
         if (item == null) {
-            this.errors.push(CatalogueStatics.NoItem);
-            return new Result({ errors: this.errors });
+            this.#errors.push(CatalogueStatics.NoItem);
+            return new Result({ errors: this.#errors });
         }
-        if (!this.validateDelete(item)) return new Result({ errors: this.errors });
-        this.collection.splice(this.collection.indexOf(item), 1);
+        if (!this.validateDelete(item)) return new Result({ errors: this.#errors });
+        this.#collection.splice(this.#collection.indexOf(item), 1);
         return new Result({ data: true });
+    }
+
+    /**
+     * @param {TItem[]} collection 
+     */
+    constructor(collection) {
+        this.#collection = collection;
+        this.#errors = [];
     }
 
 }
