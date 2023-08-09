@@ -13,8 +13,10 @@ import { ServiceCatalogue } from "./service_catalogue.js";
 import { ResultUtils } from "./utils/result_utils.js";
 import { PageUtils } from "./utils/page_utils.js";
 import { CatalogueConnectorUtils } from "./utils/catalogue_connector_utils.js";
+import { CatalogueStatics } from "./catalogue_statics.js";
 
 export {
+    CatalogueStatics,
     Result,
     Page,
     CatalogueFilters,
