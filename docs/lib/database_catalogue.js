@@ -46,25 +46,25 @@ class DatabaseCatalogue {
      * @param {TFilters} filters 
      * @returns {TItem[]}
      */
-    queryItems(items, filters) { return items; }
+    async queryItems(items, filters) { return items; }
 
     /**
      * @param {TItem} item 
      * @returns {boolean}
      */
-    validateInsert(item) { return true; }
+    async validateInsert(item) { return true; }
 
     /**
      * @param {TItem} item 
      * @returns {boolean}
      */
-    validateUpdate(item) { return true; }
+    async validateUpdate(item) { return true; }
 
     /**
      * @param {TItem} item 
      * @returns {boolean}
      */
-    validateDelete(item) { return true; }
+    async validateDelete(item) { return true; }
 
     /**
      * @param {TFilters} filters 
@@ -77,7 +77,7 @@ class DatabaseCatalogue {
             if (filters?.ids?.length && !(filters.ids.includes(item.id))) return false;
             return true;
         });
-        items = this.queryItems(items, filters);
+        items = await this.queryItems(items, filters);
         let page = PageUtils.getPage(items, filters?.pageIndex ?? 0, filters?.pageSize ?? CatalogueStatics.DefaultChunkSize);
         if (this.#creator) page.items = page.items.map(x => this.#creator(x));
         return new Result({
@@ -113,7 +113,7 @@ class DatabaseCatalogue {
             this.#errors.push(CatalogueStatics.RepeatedItem);
             return new Result({ errors: this.#errors });
         }
-        if (!this.validateInsert(item)) return new Result({ errors: this.#errors });
+        if (!(await this.validateInsert(item))) return new Result({ errors: this.#errors });
         await this.#dbset.add(item);
         return new Result({ data: item.id });
     }
@@ -132,7 +132,7 @@ class DatabaseCatalogue {
             return new Result({ errors: this.#errors });
         }
         if (item.UpdatedAt < original.UpdatedAt) return new Result({ data: false });
-        if (!this.validateUpdate(item)) return new Result({ errors: this.#errors });
+        if (!(await this.validateUpdate(item))) return new Result({ errors: this.#errors });
         await this.#dbset.update(item);
         return new Result({ data: true });
     }
@@ -148,7 +148,7 @@ class DatabaseCatalogue {
             this.#errors.push(CatalogueStatics.NoItem);
             return new Result({ errors: this.#errors });
         }
-        if (!this.validateDelete(item)) return new Result({ errors: this.#errors });
+        if (!(await this.validateDelete(item))) return new Result({ errors: this.#errors });
         await this.#dbset.remove(id);
         return new Result({ data: true });
     }
