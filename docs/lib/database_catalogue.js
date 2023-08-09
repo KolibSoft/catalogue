@@ -39,7 +39,7 @@ class DatabaseCatalogue {
     get errors() { return this.#errors; }
 
     /** @returns {boolean} */
-    get available() { return true; }
+    get available() { return 'indexedDB' in window; }
 
     /**
      * @param {TItem[]} items 
