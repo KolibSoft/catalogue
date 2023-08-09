@@ -32,25 +32,25 @@ class CollectionCatalogue {
      * @param {TFilters} filters 
      * @returns {TItem[]}
      */
-    queryItems(items, filters) { return items; }
+    async queryItems(items, filters) { return items; }
 
     /**
      * @param {TItem} item 
      * @returns {boolean}
      */
-    validateInsert(item) { return true; }
+    async validateInsert(item) { return true; }
 
     /**
      * @param {TItem} item 
      * @returns {boolean}
      */
-    validateUpdate(item) { return true; }
+    async validateUpdate(item) { return true; }
 
     /**
      * @param {TItem} item 
      * @returns {boolean}
      */
-    validateDelete(item) { return true; }
+    async validateDelete(item) { return true; }
 
     /**
      * @param {TFilters} filters 
@@ -61,7 +61,7 @@ class CollectionCatalogue {
         let items = this.#collection;
         if (filters?.changesAt) items = items.filter(x => x.updatedAt >= filters.changesAt);
         if (filters?.ids?.length) items = items.filter(x => filters.ids.includes(x.id));
-        items = this.queryItems(items, filters);
+        items = await this.queryItems(items, filters);
         let page = PageUtils.getPage(items, filters?.pageIndex ?? 0, filters?.pageSize ?? CatalogueStatics.DefaultChunkSize);
         return new Result({
             data: new Page({
@@ -95,7 +95,7 @@ class CollectionCatalogue {
             this.#errors.push(CatalogueStatics.RepeatedItem);
             return new Result({ errors: this.#errors });
         }
-        if (!this.validateInsert(item)) return new Result({ errors: this.#errors });
+        if (!(await this.validateInsert(item))) return new Result({ errors: this.#errors });
         this.#collection.push(item);
         return new Result({ data: item.id });
     }
@@ -114,7 +114,7 @@ class CollectionCatalogue {
             return new Result({ errors: this.#errors });
         }
         if (item.UpdatedAt < original.UpdatedAt) return new Result({ data: false });
-        if (!this.validateUpdate(item)) return new Result({ errors: this.#errors });
+        if (!(await this.validateUpdate(item))) return new Result({ errors: this.#errors });
         original.update(item);
         return new Result({ data: true });
     }
@@ -130,7 +130,7 @@ class CollectionCatalogue {
             this.#errors.push(CatalogueStatics.NoItem);
             return new Result({ errors: this.#errors });
         }
-        if (!this.validateDelete(item)) return new Result({ errors: this.#errors });
+        if (!(await this.validateDelete(item))) return new Result({ errors: this.#errors });
         this.#collection.splice(this.#collection.indexOf(item), 1);
         return new Result({ data: true });
     }
