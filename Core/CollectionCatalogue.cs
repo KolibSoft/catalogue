@@ -4,7 +4,7 @@ using KolibSoft.Catalogue.Core.Utils;
 namespace KolibSoft.Catalogue.Core;
 
 public class CollectionCatalogue<TItem, TFilters> : ICatalogueConnector<TItem, TFilters>
-    where TItem : IItem, IValidatable, IUpdatable<TItem>
+    where TItem : IItem, IUpdatable<TItem>
     where TFilters : IPageFilters, IItemFilters
 {
 
@@ -43,7 +43,7 @@ public class CollectionCatalogue<TItem, TFilters> : ICatalogueConnector<TItem, T
     public virtual Task<Result<Guid?>> InsertAsync(TItem item) => Task.Run<Result<Guid?>>(() =>
     {
         Errors.Clear();
-        if (!item.Validate(Errors)) return Errors.ToArray();
+        if ((item as IValidatable)?.Validate(Errors) == false) return Errors.ToArray();
         if (Collection.Any(x => x.Id == item.Id))
         {
             Errors.Add(CatalogueStatics.RepeatedItem);
@@ -57,7 +57,7 @@ public class CollectionCatalogue<TItem, TFilters> : ICatalogueConnector<TItem, T
     public virtual Task<Result<bool?>> UpdateAsync(Guid id, TItem item) => Task.Run<Result<bool?>>(() =>
     {
         Errors.Clear();
-        if (!item.Validate(Errors)) return Errors.ToArray();
+        if ((item as IValidatable)?.Validate(Errors) == false) return Errors.ToArray();
         var original = Collection.FirstOrDefault(x => x.Id == id);
         if (original == null)
         {

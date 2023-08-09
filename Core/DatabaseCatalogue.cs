@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 namespace KolibSoft.Catalogue.Core;
 
 public class DatabaseCatalogue<TItem, TFilters> : ICatalogueConnector<TItem, TFilters>
-    where TItem : class, IItem, IValidatable, IUpdatable<TItem>
+    where TItem : class, IItem, IUpdatable<TItem>
     where TFilters : IPageFilters, IItemFilters
 {
 
@@ -45,7 +45,7 @@ public class DatabaseCatalogue<TItem, TFilters> : ICatalogueConnector<TItem, TFi
     public virtual Task<Result<Guid?>> InsertAsync(TItem item) => Task.Run<Result<Guid?>>(() =>
     {
         Errors.Clear();
-        if (!item.Validate(Errors)) return Errors.ToArray();
+        if ((item as IValidatable)?.Validate(Errors) == false) return Errors.ToArray();
         if (DbSet.Any(x => x.Id == item.Id))
         {
             Errors.Add(CatalogueStatics.RepeatedItem);
@@ -60,7 +60,7 @@ public class DatabaseCatalogue<TItem, TFilters> : ICatalogueConnector<TItem, TFi
     public virtual Task<Result<bool?>> UpdateAsync(Guid id, TItem item) => Task.Run<Result<bool?>>(() =>
     {
         Errors.Clear();
-        if (!item.Validate(Errors)) return Errors.ToArray();
+        if ((item as IValidatable)?.Validate(Errors) == false) return Errors.ToArray();
         var original = DbSet.FirstOrDefault(x => x.Id == id);
         if (original == null)
         {
