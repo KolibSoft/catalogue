@@ -1,31 +1,45 @@
-import { CatalogueConnector } from "./abstractions/catalogue_connector.js";
-import { CatalogueFilters } from "./catalogue_filters.js";
-import { Page } from "./page.js";
-import { CatalogueStatics } from "./catalogue_statics.js";
-import { Result } from "./result.js";
-import { PageUtils } from "./utils/page_utils.js";
+import { CatalogueConnector } from "../abstractions/catalogue_connector.js";
+import { CatalogueFilters } from "../catalogue_filters.js";
+import { Page } from "../page.js";
+import { CatalogueStatics } from "../catalogue_statics.js";
+import { Result } from "../result.js";
+import { PageUtils } from "../utils/page_utils.js";
+import { DbContext } from "../dbcontext.js";
+import { DbSet } from "../dbset.js";
 
 /**
- * @template TItem 
+ * @template TItem
  * @template TFilters
  * @implements {CatalogueConnector}
  */
-class CollectionCatalogue {
+class DatabaseCatalogue {
 
-    /** @type {TItem[]} */
-    #collection;
+    /** @type {(json: {}) => TItem} */
+    #creator;
+
+    /** @type {DbContext} */
+    #dbContext;
+
+    /** @type {DbSet<TItem>} */
+    #dbset;
 
     /** @type {string[]} */
     #errors;
 
-    /** @returns {TItem[]} */
-    get collection() { return this.#collection; }
+    /** @returns {(json: {}) => TItem} */
+    get creator() { return this.#creator; }
+
+    /** @returns {DbContext} */
+    get dbContext() { return this.#dbContext; }
+
+    /** @returns {DbSet<TItem>} */
+    get dbset() { return this.#dbset; }
 
     /** @returns {string[]} */
     get errors() { return this.#errors; }
 
     /** @returns {boolean} */
-    get available() { return true; }
+    get available() { return 'indexedDB' in window; }
 
     /**
      * @param {TItem[]} items 
@@ -58,11 +72,14 @@ class CollectionCatalogue {
      */
     async pageAsync(filters = null) {
         this.#errors = [];
-        let items = this.#collection;
-        if (filters?.changesAt) items = items.filter(x => x.updatedAt >= filters.changesAt);
-        if (filters?.ids?.length) items = items.filter(x => filters.ids.includes(x.id));
+        let items = await this.#dbset.filter(item => {
+            if (filters?.changesAt && item.updatedAt < filters.changesAt) return false;
+            if (filters?.ids?.length && !(filters.ids.includes(item.id))) return false;
+            return true;
+        });
         items = await this.queryItems(items, filters);
         let page = PageUtils.getPage(items, filters?.pageIndex ?? 0, filters?.pageSize ?? CatalogueStatics.DefaultChunkSize);
+        if (this.#creator) page.items = page.items.map(x => this.#creator(x));
         return new Result({
             data: new Page({
                 items: page.items,
@@ -78,7 +95,8 @@ class CollectionCatalogue {
      */
     async getAsync(id) {
         this.#errors = [];
-        let item = this.#collection.find(x => x.id == id);
+        let item = await this.#dbset.get(id);
+        if (this.#creator && item) item = this.#creator(item);
         return new Result({
             data: item
         });
@@ -91,12 +109,12 @@ class CollectionCatalogue {
     async insertAsync(item) {
         this.#errors = [];
         if (item.validate && !item.validate(this.#errors)) return new Result({ errors: this.#errors });
-        if (this.#collection.some(x => x.id == item.id)) {
+        if (await this.#dbset.get(item.id)) {
             this.#errors.push(CatalogueStatics.RepeatedItem);
             return new Result({ errors: this.#errors });
         }
         if (!(await this.validateInsert(item))) return new Result({ errors: this.#errors });
-        this.#collection.push(item);
+        await this.#dbset.add(item);
         return new Result({ data: item.id });
     }
 
@@ -108,14 +126,14 @@ class CollectionCatalogue {
     async updateAsync(id, item) {
         this.#errors = [];
         if (item.validate && !item.validate(this.#errors)) return new Result({ errors: this.#errors });
-        let original = this.#collection.find(x => x.id == item.id);
+        let original = await this.#dbset.get(id);
         if (original == null) {
             this.#errors.push(CatalogueStatics.NoItem);
             return new Result({ errors: this.#errors });
         }
         if (item.UpdatedAt < original.UpdatedAt) return new Result({ data: false });
         if (!(await this.validateUpdate(item))) return new Result({ errors: this.#errors });
-        original.update(item);
+        await this.#dbset.update(item);
         return new Result({ data: true });
     }
 
@@ -125,26 +143,30 @@ class CollectionCatalogue {
      */
     async deleteAsync(id) {
         this.#errors = [];
-        let item = this.#collection.find(x => x.id == item.id);
+        let item = this.#dbset.get(id);
         if (item == null) {
             this.#errors.push(CatalogueStatics.NoItem);
             return new Result({ errors: this.#errors });
         }
         if (!(await this.validateDelete(item))) return new Result({ errors: this.#errors });
-        this.#collection.splice(this.#collection.indexOf(item), 1);
+        await this.#dbset.remove(id);
         return new Result({ data: true });
     }
 
     /**
-     * @param {TItem[]} collection 
+     * @param {(json: {}) => TItem} creator
+     * @param {DbContext} dbContext 
+     * @param {string} name 
      */
-    constructor(collection) {
-        this.#collection = collection;
+    constructor(creator, dbContext, name) {
+        this.#creator = creator;
+        this.#dbContext = dbContext;
+        this.#dbset = dbContext.set(name);
         this.#errors = [];
     }
 
 }
 
 export {
-    CollectionCatalogue
+    DatabaseCatalogue
 }

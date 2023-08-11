@@ -1,9 +1,8 @@
-import { CatalogueFilters } from "./catalogue_filters.js";
-import { Page } from "./page.js";
-import { Result } from "./result.js";
-import { CatalogueConnector } from "./abstractions/catalogue_connector.js";
-import { CatalogueConnectorUtils } from "./utils/catalogue_connector_utils.js";
-
+import { CatalogueFilters } from "../catalogue_filters.js";
+import { Page } from "../page.js";
+import { Result } from "../result.js";
+import { CatalogueConnector } from "../abstractions/catalogue_connector.js";
+import { CatalogueConnectorUtils } from "../utils/catalogue_connector_utils.js";
 
 /**
  * @template TItem 
