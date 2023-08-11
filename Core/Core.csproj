@@ -9,7 +9,7 @@
   <PropertyGroup>
     <PackageId>KolibSoft.Catalogue.Core</PackageId>
     <AssemblyName>KolibSoft.Catalogue.Core</AssemblyName>
-    <PackageVersion>3.0.6</PackageVersion>
+    <PackageVersion>3.0.7</PackageVersion>
     <Authors>Kolib Software</Authors>
     <Copyright>Kolib Software</Copyright>
     <RepositoryUrl>https://github.com/KolibSoft/catalogue</RepositoryUrl>
