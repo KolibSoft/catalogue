@@ -2,7 +2,7 @@ using KolibSoft.Catalogue.Core.Abstractions;
 using KolibSoft.Catalogue.Core.Utils;
 using Microsoft.EntityFrameworkCore;
 
-namespace KolibSoft.Catalogue.Core;
+namespace KolibSoft.Catalogue.Core.Catalogues;
 
 public class DatabaseCatalogue<TItem, TFilters> : ICatalogueConnector<TItem, TFilters>
     where TItem : class, IItem, IUpdatable<TItem>

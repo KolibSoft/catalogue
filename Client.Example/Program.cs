@@ -2,6 +2,7 @@
 using KolibSoft.Catalogue.Client.Example;
 using KolibSoft.Catalogue.Core;
 using KolibSoft.Catalogue.Core.Abstractions;
+using KolibSoft.Catalogue.Core.Catalogues;
 using KolibSoft.Catalogue.Core.Utils;
 
 var httpClient = new HttpClient();

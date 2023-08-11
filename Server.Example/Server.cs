@@ -1,5 +1,6 @@
 using KolibSoft.Catalogue.Core;
 using KolibSoft.Catalogue.Core.Abstractions;
+using KolibSoft.Catalogue.Core.Catalogues;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 

@@ -1,7 +1,7 @@
 using KolibSoft.Catalogue.Core.Abstractions;
 using KolibSoft.Catalogue.Core.Utils;
 
-namespace KolibSoft.Catalogue.Core;
+namespace KolibSoft.Catalogue.Core.Catalogues;
 
 public class CollectionCatalogue<TItem, TFilters> : ICatalogueConnector<TItem, TFilters>
     where TItem : IItem, IUpdatable<TItem>
