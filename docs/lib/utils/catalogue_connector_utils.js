@@ -9,7 +9,7 @@ class CatalogueConnectorUtils {
      * @param {string} id 
      * @param {TItem} item 
      */
-    async syncItem(catalogueConnector, id, item) {
+    static async syncItem(catalogueConnector, id, item) {
         let original = (await catalogueConnector.getAsync(id)).data;
         if (original == null) {
             if (item == null) return null;
@@ -28,7 +28,7 @@ class CatalogueConnectorUtils {
      * @param {CatalogueConnector<TItem, TFilters>} srcConnector 
      * @param {{}} changes 
      */
-    async pullItems(dstConnector, srcConnector, changes) {
+    static async pullItems(dstConnector, srcConnector, changes) {
         for (let id of Object.keys(changes)) {
             var item = (await srcConnector.getAsync(id)).data;
             let errors = await syncItem(dstConnector, id, item);
@@ -44,7 +44,7 @@ class CatalogueConnectorUtils {
      * @param {CatalogueConnector<TItem, TFilters>} srcConnector 
      * @param {{}} changes 
      */
-    async pushItems(srcConnector, dstConnector, changes) {
+    static async pushItems(srcConnector, dstConnector, changes) {
         for (let id of Object.keys(changes)) {
             var item = (await srcConnector.getAsync(id)).data;
             let errors = await syncItem(dstConnector, id, item);
