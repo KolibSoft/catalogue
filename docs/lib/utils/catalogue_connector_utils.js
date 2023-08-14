@@ -31,7 +31,7 @@ class CatalogueConnectorUtils {
     static async pullItems(dstConnector, srcConnector, changes) {
         for (let id of Object.keys(changes)) {
             var item = (await srcConnector.getAsync(id)).data;
-            let errors = await syncItem(dstConnector, id, item);
+            let errors = await CatalogueConnectorUtils.syncItem(dstConnector, id, item);
             if (errors == null) delete changes[id];
             else changes[id] = errors;
         }
@@ -47,7 +47,7 @@ class CatalogueConnectorUtils {
     static async pushItems(srcConnector, dstConnector, changes) {
         for (let id of Object.keys(changes)) {
             var item = (await srcConnector.getAsync(id)).data;
-            let errors = await syncItem(dstConnector, id, item);
+            let errors = await CatalogueConnectorUtils.syncItem(dstConnector, id, item);
             if (errors == null) delete changes[id];
             else changes[id] = errors;
         }
