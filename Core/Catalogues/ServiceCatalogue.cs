@@ -20,7 +20,7 @@ public class ServiceCatalogue<TItem, TFilters> : ICatalogueConnector<TItem, TFil
             {
                 await LocalConnector.PushItems(RemoteConnector, Changes);
             }
-            catch { }
+            catch (Exception e) { Console.WriteLine(e.Message); }
     }
 
     public virtual async Task<Result<Page<TItem>?>> PageAsync(TFilters? filters = default)
@@ -32,7 +32,7 @@ public class ServiceCatalogue<TItem, TFilters> : ICatalogueConnector<TItem, TFil
                 if (result.Data?.Items.Any() == true) foreach (var item in result.Data.Items) await LocalConnector.SyncItem(item.Id, item);
                 return result;
             }
-            catch { }
+            catch (Exception e) { Console.WriteLine(e.Message); }
         return await LocalConnector.PageAsync(filters);
     }
 
@@ -45,7 +45,7 @@ public class ServiceCatalogue<TItem, TFilters> : ICatalogueConnector<TItem, TFil
                 if (result.Errors == null) await LocalConnector.SyncItem(id, result.Data);
                 return result;
             }
-            catch { }
+            catch (Exception e) { Console.WriteLine(e.Message); }
         return await LocalConnector.GetAsync(id);
     }
 
@@ -59,7 +59,7 @@ public class ServiceCatalogue<TItem, TFilters> : ICatalogueConnector<TItem, TFil
                 if (result.Data != null) await GetAsync(result.Data.Value);
                 return result;
             }
-            catch { }
+            catch (Exception e) { Console.WriteLine(e.Message); }
         result = await LocalConnector.InsertAsync(item);
         if (result.Data != null) Changes[result.Data.Value] = null;
         return result;
@@ -75,7 +75,7 @@ public class ServiceCatalogue<TItem, TFilters> : ICatalogueConnector<TItem, TFil
                 if (result.Data == true) await GetAsync(id);
                 return result;
             }
-            catch { }
+            catch (Exception e) { Console.WriteLine(e.Message); }
         result = await LocalConnector.UpdateAsync(id, item);
         if (result.Data == true) Changes[id] = null;
         return result;
@@ -91,7 +91,7 @@ public class ServiceCatalogue<TItem, TFilters> : ICatalogueConnector<TItem, TFil
                 if (result.Data == true) await GetAsync(id);
                 return result;
             }
-            catch { }
+            catch (Exception e) { Console.WriteLine(e.Message); }
         result = await LocalConnector.DeleteAsync(id);
         if (result.Data == true) Changes[id] = null;
         return result;

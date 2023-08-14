@@ -10,7 +10,8 @@ class ResultUtils {
         try {
             let result = new Result(await response.json());
             return result;
-        } catch { }
+        }
+        catch (error) { console.log(error); }
         return new Result({ errors: response.statusText.trim().toUpperCase().replace(" ", "_") });
     }
 

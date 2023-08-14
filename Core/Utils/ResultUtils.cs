@@ -12,7 +12,7 @@ public static class ResultUtils
             var result = await response.Content.ReadFromJsonAsync<Result<T?>>();
             if (result != null) return result;
         }
-        catch { }
+        catch (Exception e) { Console.WriteLine(e.Message); }
         return new string[] { response.ReasonPhrase.ToCode() };
     }
 
