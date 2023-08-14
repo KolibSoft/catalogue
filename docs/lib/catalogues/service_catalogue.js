@@ -27,7 +27,8 @@ class ServiceCatalogue {
         if (this.remoteConnector.available)
             try {
                 await CatalogueConnectorUtils.pushItems(this.localConnector, this.remoteConnector, this.changes);
-            } catch { }
+            }
+            catch (error) { console.log(error); }
     }
 
     /**
@@ -40,7 +41,8 @@ class ServiceCatalogue {
                 let result = await this.remoteConnector.pageAsync(filters);
                 if (result.data?.items.length > 0) for (let item of result.data?.items) await CatalogueConnectorUtils.syncItem(this.localConnector, item.id, item);
                 return result;
-            } catch { }
+            }
+            catch (error) { console.log(error); }
         return await this.localConnector.pageAsync(filters);
     }
 
@@ -54,7 +56,8 @@ class ServiceCatalogue {
                 let result = await this.remoteConnector.getAsync(id);
                 if (result.errors == null) await CatalogueConnectorUtils.syncItem(this.localConnector, id, result.data);
                 return result;
-            } catch { }
+            }
+            catch (error) { console.log(error); }
         return await this.localConnector.getAsync(id);
     }
 
@@ -69,7 +72,8 @@ class ServiceCatalogue {
                 result = await this.remoteConnector.insertAsync(item);
                 if (result.data != null) await this.getAsync(result.data);
                 return result;
-            } catch { }
+            }
+            catch (error) { console.log(error); }
         result = await this.localConnector.insertAsync(item);
         if (result.data != null) this.changes[result.data] = null;
         return result;
@@ -87,7 +91,8 @@ class ServiceCatalogue {
                 result = await this.remoteConnector.updateAsync(id, item);
                 if (result.data == true) await this.getAsync(id);
                 return result;
-            } catch { }
+            }
+            catch (error) { console.log(error); }
         result = await this.localConnector.updateAsync(id, item);
         if (result.data == true) this.changes[id] = null;
         return result;
@@ -104,7 +109,8 @@ class ServiceCatalogue {
                 result = await this.remoteConnector.deleteAsync(id);
                 if (result.data == true) await this.getAsync(id);
                 return result;
-            } catch { }
+            }
+            catch (error) { console.log(error); }
         result = await this.localConnector.deleteAsync(id);
         if (result.data == true) this.changes[id] = null;
         return result;
