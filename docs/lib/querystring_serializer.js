@@ -8,18 +8,22 @@ class QueryStringSerializer {
         let params = new URLSearchParams();
         for (let key in object) {
             let value = object[key];
-            if (Array.isArray(value)) {
-                let items = value;
-                for (let item of items) {
-                    value = JSON.stringify(item);
+            if (value) {
+                if (Array.isArray(value)) {
+                    let items = value;
+                    for (let item of items) {
+                        if (item) {
+                            value = JSON.stringify(item);
+                            if (value.startsWith("\"") && value.endsWith("\"")) value = value.substring(1, value.length - 1);
+                            params.append(key, value);
+                        }
+                    }
+                }
+                else {
+                    value = JSON.stringify(value);
                     if (value.startsWith("\"") && value.endsWith("\"")) value = value.substring(1, value.length - 1);
                     params.append(key, value);
                 }
-            }
-            else {
-                value = JSON.stringify(value);
-                if (value.startsWith("\"") && value.endsWith("\"")) value = value.substring(1, value.length - 1);
-                params.append(key, value);
             }
         }
         let queryString = params.toString();
