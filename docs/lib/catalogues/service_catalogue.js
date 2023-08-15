@@ -12,21 +12,30 @@ import { CatalogueConnectorUtils } from "../utils/catalogue_connector_utils.js";
 class ServiceCatalogue {
 
     /** @type {CatalogueConnector<TItem, TFilters>} */
-    localConnector;
+    #localConnector;
 
     /** @type {CatalogueConnector<TItem, TFilters>} */
-    remoteConnector;
+    #remoteConnector;
 
     /** @type {{}} */
-    changes;
+    #changes;
+
+    /** @type {CatalogueConnector<TItem, TFilters>} */
+    get localConnector() { return this.#localConnector; }
+
+    /** @type {CatalogueConnector<TItem, TFilters>} */
+    get remoteConnector() { return this.#remoteConnector; }
+
+    /** @type {{}} */
+    get changes() { return this.#changes; }
 
     /** @returns {boolean} */
-    get available() { return this.remoteConnector.available || this.localConnector.available; }
+    get available() { return this.#remoteConnector.available || this.#localConnector.available; }
 
     async sync() {
-        if (this.remoteConnector.available)
+        if (this.#remoteConnector.available)
             try {
-                await CatalogueConnectorUtils.pushItems(this.localConnector, this.remoteConnector, this.changes);
+                await CatalogueConnectorUtils.pushItems(this.#localConnector, this.#remoteConnector, this.#changes);
             }
             catch (error) { console.log(error); }
     }
@@ -36,14 +45,14 @@ class ServiceCatalogue {
      * @returns {Promise<Result<Page<TItem>>>}
      */
     async pageAsync(filters = null) {
-        if (this.remoteConnector.available)
+        if (this.#remoteConnector.available)
             try {
-                let result = await this.remoteConnector.pageAsync(filters);
-                if (result.data?.items.length > 0) for (let item of result.data?.items) await CatalogueConnectorUtils.syncItem(this.localConnector, item.id, item);
+                let result = await this.#remoteConnector.pageAsync(filters);
+                if (result.data?.items.length > 0) for (let item of result.data?.items) await CatalogueConnectorUtils.syncItem(this.#localConnector, item.id, item);
                 return result;
             }
             catch (error) { console.log(error); }
-        return await this.localConnector.pageAsync(filters);
+        return await this.#localConnector.pageAsync(filters);
     }
 
     /**
@@ -51,14 +60,14 @@ class ServiceCatalogue {
      * @returns {Promise<Result<TItem>>}
      */
     async getAsync(id) {
-        if (this.remoteConnector.available)
+        if (this.#remoteConnector.available)
             try {
-                let result = await this.remoteConnector.getAsync(id);
-                if (result.errors == null) await CatalogueConnectorUtils.syncItem(this.localConnector, id, result.data);
+                let result = await this.#remoteConnector.getAsync(id);
+                if (result.errors == null) await CatalogueConnectorUtils.syncItem(this.#localConnector, id, result.data);
                 return result;
             }
             catch (error) { console.log(error); }
-        return await this.localConnector.getAsync(id);
+        return await this.#localConnector.getAsync(id);
     }
 
     /**
@@ -67,15 +76,15 @@ class ServiceCatalogue {
      */
     async insertAsync(item) {
         let result = null;
-        if (this.remoteConnector.available)
+        if (this.#remoteConnector.available)
             try {
-                result = await this.remoteConnector.insertAsync(item);
+                result = await this.#remoteConnector.insertAsync(item);
                 if (result.data != null) await this.getAsync(result.data);
                 return result;
             }
             catch (error) { console.log(error); }
-        result = await this.localConnector.insertAsync(item);
-        if (result.data != null) this.changes[result.data] = null;
+        result = await this.#localConnector.insertAsync(item);
+        if (result.data != null) this.#changes[result.data] = null;
         return result;
     }
 
@@ -86,15 +95,15 @@ class ServiceCatalogue {
      */
     async updateAsync(id, item) {
         let result = null;
-        if (this.remoteConnector.available)
+        if (this.#remoteConnector.available)
             try {
-                result = await this.remoteConnector.updateAsync(id, item);
+                result = await this.#remoteConnector.updateAsync(id, item);
                 if (result.data == true) await this.getAsync(id);
                 return result;
             }
             catch (error) { console.log(error); }
-        result = await this.localConnector.updateAsync(id, item);
-        if (result.data == true) this.changes[id] = null;
+        result = await this.#localConnector.updateAsync(id, item);
+        if (result.data == true) this.#changes[id] = null;
         return result;
     }
 
@@ -104,15 +113,15 @@ class ServiceCatalogue {
      */
     async deleteAsync(id) {
         let result = null;
-        if (this.remoteConnector.available)
+        if (this.#remoteConnector.available)
             try {
-                result = await this.remoteConnector.deleteAsync(id);
+                result = await this.#remoteConnector.deleteAsync(id);
                 if (result.data == true) await this.getAsync(id);
                 return result;
             }
             catch (error) { console.log(error); }
-        result = await this.localConnector.deleteAsync(id);
-        if (result.data == true) this.changes[id] = null;
+        result = await this.#localConnector.deleteAsync(id);
+        if (result.data == true) this.#changes[id] = null;
         return result;
     }
 
@@ -120,12 +129,12 @@ class ServiceCatalogue {
      * 
      * @param {CatalogueConnector<TItem, TFilters>} localConnector 
      * @param {CatalogueConnector<TItem, TFilters>} remoteConnector 
-     * @param {Set<Change>} changes 
+     * @param {{}} changes 
      */
     constructor(localConnector, remoteConnector, changes) {
-        this.localConnector = localConnector;
-        this.remoteConnector = remoteConnector;
-        this.changes = changes;
+        this.#localConnector = localConnector;
+        this.#remoteConnector = remoteConnector;
+        this.#changes = changes;
     }
 
 }
