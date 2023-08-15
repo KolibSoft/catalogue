@@ -8,11 +8,11 @@ class QueryStringSerializer {
         let params = new URLSearchParams();
         for (let key in object) {
             let value = object[key];
-            if (value) {
+            if (value != null) {
                 if (Array.isArray(value)) {
                     let items = value;
                     for (let item of items) {
-                        if (item) {
+                        if (item != null) {
                             value = JSON.stringify(item);
                             if (value.startsWith("\"") && value.endsWith("\"")) value = value.substring(1, value.length - 1);
                             params.append(key, value);
