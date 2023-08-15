@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace KolibSoft.Catalogue.Server;
 
+[Route("_NO_ROUTE_")]
 public class CatalogueController<TItem, TFilters> : ControllerBase, ICatalogueConnector<TItem, TFilters>
 {
 
