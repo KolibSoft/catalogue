@@ -5,7 +5,7 @@ import { CatalogueStatics } from "../catalogue_statics.js";
 import { Result } from "../result.js";
 import { PageUtils } from "../utils/page_utils.js";
 import { DbContext } from "../dbcontext.js";
-import { DbSet } from "../dbSet.js";
+import { DbSet } from "../dbset.js";
 
 /**
  * @template TItem

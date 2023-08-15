@@ -4,7 +4,7 @@ import { Page } from "./page.js";
 import { CollectionCatalogue } from "./catalogues/collection_catalogue.js";
 import { DatabaseCatalogue } from "./catalogues/database_catalogue.js";
 import { DbContext } from "./dbcontext.js";
-import { DbSet } from "./dbSet.js";
+import { DbSet } from "./dbset.js";
 import { Item } from "./item.js";
 import { Result } from "./result.js";
 import { QueryStringSerializer } from "./querystring_serializer.js";

@@ -1,4 +1,4 @@
-import { DbSet } from "./dbSet.js";
+import { DbSet } from "./dbset.js";
 
 class DbContext {
 
