@@ -5,7 +5,7 @@ import { CatalogueStatics } from "../catalogue_statics.js";
 import { Result } from "../result.js";
 import { PageUtils } from "../utils/page_utils.js";
 import { DbContext } from "../dbcontext.js";
-import { DbSet } from "../dbset.js";
+import { DbSet } from "../dbSet.js";
 
 /**
  * @template TItem
@@ -21,7 +21,7 @@ class DatabaseCatalogue {
     #dbContext;
 
     /** @type {DbSet<TItem>} */
-    #dbset;
+    #dbSet;
 
     /** @type {string[]} */
     #errors;
@@ -33,7 +33,7 @@ class DatabaseCatalogue {
     get dbContext() { return this.#dbContext; }
 
     /** @returns {DbSet<TItem>} */
-    get dbset() { return this.#dbset; }
+    get dbSet() { return this.#dbSet; }
 
     /** @returns {string[]} */
     get errors() { return this.#errors; }
@@ -72,7 +72,7 @@ class DatabaseCatalogue {
      */
     async pageAsync(filters = null) {
         this.#errors = [];
-        let items = await this.#dbset.filter(item => {
+        let items = await this.#dbSet.filter(item => {
             if (filters?.changesAt && item.updatedAt < filters.changesAt) return false;
             if (filters?.ids?.length && !(filters.ids.includes(item.id))) return false;
             return true;
@@ -95,7 +95,7 @@ class DatabaseCatalogue {
      */
     async getAsync(id) {
         this.#errors = [];
-        let item = await this.#dbset.get(id);
+        let item = await this.#dbSet.get(id);
         if (this.#creator && item) item = this.#creator(item);
         return new Result({
             data: item
@@ -109,12 +109,12 @@ class DatabaseCatalogue {
     async insertAsync(item) {
         this.#errors = [];
         if (item.validate && !item.validate(this.#errors)) return new Result({ errors: this.#errors });
-        if (await this.#dbset.get(item.id)) {
+        if (await this.#dbSet.get(item.id)) {
             this.#errors.push(CatalogueStatics.RepeatedItem);
             return new Result({ errors: this.#errors });
         }
         if (!(await this.validateInsert(item))) return new Result({ errors: this.#errors });
-        await this.#dbset.add(item);
+        await this.#dbSet.add(item);
         return new Result({ data: item.id });
     }
 
@@ -126,14 +126,14 @@ class DatabaseCatalogue {
     async updateAsync(id, item) {
         this.#errors = [];
         if (item.validate && !item.validate(this.#errors)) return new Result({ errors: this.#errors });
-        let original = await this.#dbset.get(id);
+        let original = await this.#dbSet.get(id);
         if (original == null) {
             this.#errors.push(CatalogueStatics.NoItem);
             return new Result({ errors: this.#errors });
         }
         if (item.UpdatedAt < original.UpdatedAt) return new Result({ data: false });
         if (!(await this.validateUpdate(item))) return new Result({ errors: this.#errors });
-        await this.#dbset.update(item);
+        await this.#dbSet.update(item);
         return new Result({ data: true });
     }
 
@@ -143,13 +143,13 @@ class DatabaseCatalogue {
      */
     async deleteAsync(id) {
         this.#errors = [];
-        let item = this.#dbset.get(id);
+        let item = this.#dbSet.get(id);
         if (item == null) {
             this.#errors.push(CatalogueStatics.NoItem);
             return new Result({ errors: this.#errors });
         }
         if (!(await this.validateDelete(item))) return new Result({ errors: this.#errors });
-        await this.#dbset.remove(id);
+        await this.#dbSet.remove(id);
         return new Result({ data: true });
     }
 
@@ -161,7 +161,7 @@ class DatabaseCatalogue {
     constructor(creator, dbContext, name) {
         this.#creator = creator;
         this.#dbContext = dbContext;
-        this.#dbset = dbContext.set(name);
+        this.#dbSet = dbContext.set(name);
         this.#errors = [];
     }
 

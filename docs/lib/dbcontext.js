@@ -1,4 +1,4 @@
-import { DbSet } from "./dbset.js";
+import { DbSet } from "./dbSet.js";
 
 class DbContext {
 
@@ -51,8 +51,8 @@ class DbContext {
      * @returns {DbSet}
      */
     set(name) {
-        let dbset = new DbSet(this, name);
-        return dbset;
+        let dbSet = new DbSet(this, name);
+        return dbSet;
     }
 
     /**
