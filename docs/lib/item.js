@@ -1,3 +1,5 @@
+import { UTCUtils } from "./main";
+
 class Item {
 
     /**
@@ -11,7 +13,7 @@ class Item {
      */
     constructor(json) {
         this.id = json?.id ?? crypto.randomUUID();
-        this.updatedAt = new Date(json?.updatedAt ?? new Date());
+        this.updatedAt = new Date(json?.updatedAt ?? UTCUtils.toUtc(new Date()));
     }
 
 }
