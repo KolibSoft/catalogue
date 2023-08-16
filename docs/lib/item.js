@@ -1,4 +1,4 @@
-import { UTCUtils } from "./main";
+import { UTCUtils } from "./utils/utc_utils.js";
 
 class Item {
 
