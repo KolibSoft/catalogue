@@ -51,7 +51,7 @@ public class CollectionCatalogue<TItem, TFilters> : ICatalogueConnector<TItem, T
         var original = Collection.FirstOrDefault(x => x.Id == id);
         if (original == null) return default(TItem?);
         if (!await OnValidateUpdateAsync(item)) return Errors.ToArray();
-        original.Update(item);
+        if (original.ModifiedAt <= item.ModifiedAt) original.Update(item);
         return original;
     }
 

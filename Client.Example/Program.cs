@@ -23,6 +23,7 @@ await connector.Sync();
 await InsertMany();
 
 var page = await connector.QueryAsync();
+var item = await connector.GetAsync(page.Data!.Items.First().Id);
 
 json = JsonSerializer.Serialize(connector.Changes);
 await File.WriteAllTextAsync("changes.json", json);
@@ -31,6 +32,6 @@ async Task InsertMany()
 {
     for (var i = 0; i < 5; i++)
     {
-        var idResult = await connector!.InsertAsync(new SettingsModel { Value = $"" });
+        var idResult = await connector!.InsertAsync(new SettingsModel { Value = $"SYNC" });
     }
 }

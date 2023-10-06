@@ -22,27 +22,27 @@ public static class CatalogueConnectorUtils
         }
     }
 
-    public static async Task PullItems<TItem, TFilters>(this ICatalogueConnector<TItem, TFilters> dstConnector, ICatalogueConnector<TItem, TFilters> srcConnector, IDictionary<Guid, string[]> changes)
+    public static async Task PullChanges<TItem, TFilters>(this ICatalogueConnector<TItem, TFilters> dstConnector, ICatalogueConnector<TItem, TFilters> srcConnector, ICollection<Change> changes)
         where TItem : IItem
     {
-        foreach (var id in changes.Keys.ToArray())
+        foreach (var change in changes.ToArray())
         {
-            var item = (await srcConnector.GetAsync(id)).Data;
-            var result = await dstConnector.SyncItem(id, item);
-            if (result.Ok) changes.Remove(id);
-            else changes[id] = result.Errors;
+            var item = (await srcConnector.GetAsync(change.Id)).Data;
+            var result = await dstConnector.SyncItem(change.Id, item);
+            if (result.Ok) changes.Remove(change);
+            else change.Errors = result.Errors;
         }
     }
 
-    public static async Task PushItems<TItem, TFilters>(this ICatalogueConnector<TItem, TFilters> srcConnector, ICatalogueConnector<TItem, TFilters> dstConnector, IDictionary<Guid, string[]> changes)
+    public static async Task PushChanges<TItem, TFilters>(this ICatalogueConnector<TItem, TFilters> srcConnector, ICatalogueConnector<TItem, TFilters> dstConnector, ICollection<Change> changes)
         where TItem : IItem
     {
-        foreach (var id in changes.Keys.ToArray())
+        foreach (var change in changes.ToArray())
         {
-            var item = (await srcConnector.GetAsync(id)).Data;
-            var result = await dstConnector.SyncItem(id, item);
-            if (result.Ok) changes.Remove(id);
-            else changes[id] = result.Errors;
+            var item = (await srcConnector.GetAsync(change.Id)).Data;
+            var result = await dstConnector.SyncItem(change.Id, item);
+            if (result.Ok) changes.Remove(change);
+            else change.Errors = result.Errors;
         }
     }
 

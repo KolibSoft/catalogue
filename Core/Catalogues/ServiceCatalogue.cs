@@ -12,14 +12,14 @@ public class ServiceCatalogue<TItem, TFilters> : ICatalogueConnector<TItem, TFil
     public ICatalogueConnector<TItem, TFilters> RemoteConnector { get; }
     public virtual bool Available => RemoteConnector.Available || LocalConnector.Available;
 
-    public IDictionary<Guid, string[]> Changes { get; }
+    public ICollection<Change> Changes { get; }
 
     public virtual async Task Sync()
     {
         if (RemoteConnector.Available)
             try
             {
-                await LocalConnector.PushItems(RemoteConnector, Changes);
+                await LocalConnector.PushChanges(RemoteConnector, Changes);
             }
             catch (Exception e) { Console.WriteLine(e.Message); }
     }
@@ -62,7 +62,7 @@ public class ServiceCatalogue<TItem, TFilters> : ICatalogueConnector<TItem, TFil
             }
             catch (Exception e) { Console.WriteLine(e.Message); }
         result = await LocalConnector.InsertAsync(item);
-        if (result.Ok) Changes[item.Id] = Array.Empty<string>();
+        if (result.Ok) Changes.Add(new Change(item.Id));
         return result;
     }
 
@@ -78,7 +78,7 @@ public class ServiceCatalogue<TItem, TFilters> : ICatalogueConnector<TItem, TFil
             }
             catch (Exception e) { Console.WriteLine(e.Message); }
         result = await LocalConnector.UpdateAsync(id, item);
-        if (result.Ok) Changes[id] = Array.Empty<string>();
+        if (result.Ok) Changes.Add(new Change(id));
         return result;
     }
 
@@ -94,11 +94,11 @@ public class ServiceCatalogue<TItem, TFilters> : ICatalogueConnector<TItem, TFil
             }
             catch (Exception e) { Console.WriteLine(e.Message); }
         result = await LocalConnector.DeleteAsync(id);
-        if (result.Ok) Changes[id] = Array.Empty<string>();
+        if (result.Ok) Changes.Add(new Change(id));
         return result;
     }
 
-    public ServiceCatalogue(ICatalogueConnector<TItem, TFilters> localConnector, ICatalogueConnector<TItem, TFilters> remoteConnector, IDictionary<Guid, string[]> changes)
+    public ServiceCatalogue(ICatalogueConnector<TItem, TFilters> localConnector, ICatalogueConnector<TItem, TFilters> remoteConnector, ICollection<Change> changes)
     {
         LocalConnector = localConnector;
         RemoteConnector = remoteConnector;
