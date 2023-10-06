@@ -22,10 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Core\Core.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <PackageReference Include="KolibSoft.Catalogue.Core" Version="4.0.0-a" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
   </ItemGroup>
 

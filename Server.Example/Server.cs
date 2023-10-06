@@ -34,8 +34,8 @@ public class SettingsModel : IItem, IValidatable, IUpdatable<SettingsModel>
 
 [Route("[controller]")]
 [EnableCors("Allow-All")]
-public class SettingsController : CatalogueController<SettingsModel, CatalogueFilters>
+public class SettingsController : CatalogueController<SettingsModel, object>
 {
     public static ICollection<SettingsModel> Collection { get; } = new List<SettingsModel>();
-    public SettingsController() : base(new CollectionCatalogue<SettingsModel, CatalogueFilters>(Collection)) { }
+    public SettingsController() : base(new CollectionCatalogue<SettingsModel, object>(Collection)) { }
 }
