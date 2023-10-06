@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using KolibSoft.Catalogue.Core.Abstractions;
 
 namespace KolibSoft.Catalogue.Core;
@@ -8,6 +9,7 @@ public struct Result<T>
     public T? Data { get; } = default;
     public string[] Errors { get; } = Array.Empty<string>();
 
+    [JsonIgnore]
     public bool Ok => Errors.Length == 0;
 
     public Result(T? data)

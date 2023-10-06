@@ -1,6 +1,7 @@
 using KolibSoft.Catalogue.Core;
 using KolibSoft.Catalogue.Core.Abstractions;
 using Microsoft.EntityFrameworkCore;
+using static KolibSoft.Catalogue.Core.Constants;
 
 namespace KolibSoft.Catalogue.Client.Example;
 
@@ -10,13 +11,13 @@ public class SettingsModel : IItem, IValidatable, IUpdatable<SettingsModel>
     public Guid Id { get; set; } = Guid.NewGuid();
     public string Value { get; set; } = string.Empty;
     public bool Active { get; set; } = true;
-    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime ModifiedAt { get; set; } = DateTime.UtcNow;
 
     public bool Validate(ICollection<string>? errors = default)
     {
         Value = Value.Trim();
         var invalid = false;
-        if (invalid = Id == Guid.Empty) errors?.Add(CatalogueStatics.InvalidId);
+        if (invalid = Id == Guid.Empty) errors?.Add(InvalidId);
         if (invalid = Value == string.Empty) errors?.Add("INVALID_VALUE");
         return !invalid;
     }
@@ -25,12 +26,12 @@ public class SettingsModel : IItem, IValidatable, IUpdatable<SettingsModel>
     {
         Value = newState.Value;
         Active = newState.Active;
-        UpdatedAt = DateTime.UtcNow;
+        ModifiedAt = DateTime.UtcNow;
     }
 
 }
 
-public class SettingsService : CatalogueService<SettingsModel, CatalogueFilters>
+public class SettingsService : CatalogueService<SettingsModel, object>
 {
     public SettingsService(HttpClient httpClient, string uri) : base(httpClient, uri) { }
 }
@@ -51,7 +52,7 @@ public class SettingsContext : DbContext
             entity.Property(x => x.Id);
             entity.Property(x => x.Value);
             entity.Property(x => x.Active);
-            entity.Property(x => x.UpdatedAt);
+            entity.Property(x => x.ModifiedAt);
             entity.HasKey(x => x.Id);
         });
     }
