@@ -5,7 +5,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="KolibSoft.Catalogue.Core" Version="4.0.0-b" />
+    <PackageReference Include="KolibSoft.Catalogue.Core" Version="4.0.0-c" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.9" />
   </ItemGroup>
 
