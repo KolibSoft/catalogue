@@ -2,16 +2,30 @@ using KolibSoft.Catalogue.Core.Abstractions;
 
 namespace KolibSoft.Catalogue.Core;
 
-public class Result<T> : IResult<T>
+public struct Result<T>
 {
 
-    public T? Data { get; init; }
-    public string[]? Errors { get; init; }
+    public T? Data { get; } = default;
+    public string[] Errors { get; } = Array.Empty<string>();
 
-    public static implicit operator Result<T>(T? data) => new() { Data = data };
-    public static implicit operator Result<T>(string[]? errors) => new() { Errors = errors };
+    public bool Ok => Errors.Length == 0;
+
+    public Result(T? data)
+    {
+        Data = data;
+        Errors = Array.Empty<string>();
+    }
+
+    public Result(params string[] errors)
+    {
+        Data = default;
+        Errors = errors;
+    }
+
+    public static implicit operator Result<T>(T? data) => new(data);
+    public static implicit operator Result<T>(string[] errors) => new(errors);
 
     public static implicit operator T?(Result<T> result) => result.Data;
-    public static implicit operator string[]?(Result<T> result) => result.Errors;
+    public static implicit operator string[](Result<T> result) => result.Errors;
 
 }

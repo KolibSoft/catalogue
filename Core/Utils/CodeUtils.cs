@@ -5,7 +5,7 @@ public static class CodeUtils
 
     public static string ToCode(this string? @string)
     {
-        var code = @string?.Trim().ToUpper().Replace(" ", "_") ?? CatalogueStatics.NoCode;
+        var code = @string?.Trim().ToUpper().Replace(" ", "_") ?? Constants.NoCode;
         return code;
     }
 

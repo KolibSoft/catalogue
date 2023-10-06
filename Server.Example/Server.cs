@@ -12,13 +12,13 @@ public class SettingsModel : IItem, IValidatable, IUpdatable<SettingsModel>
     public Guid Id { get; set; } = Guid.NewGuid();
     public string Value { get; set; } = string.Empty;
     public bool Active { get; set; } = true;
-    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime ModifiedAt { get; set; } = DateTime.UtcNow;
 
     public bool Validate(ICollection<string>? errors = default)
     {
         Value = Value.Trim();
         var invalid = false;
-        if (invalid = Id == Guid.Empty) errors?.Add(CatalogueStatics.InvalidId);
+        if (invalid = Id == Guid.Empty) errors?.Add(Constants.InvalidId);
         if (invalid = Value == string.Empty) errors?.Add("INVALID_VALUE");
         return !invalid;
     }
@@ -27,7 +27,7 @@ public class SettingsModel : IItem, IValidatable, IUpdatable<SettingsModel>
     {
         Value = newState.Value;
         Active = newState.Active;
-        UpdatedAt = DateTime.UtcNow;
+        ModifiedAt = DateTime.UtcNow;
     }
 
 }

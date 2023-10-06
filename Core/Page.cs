@@ -2,7 +2,7 @@ using KolibSoft.Catalogue.Core.Abstractions;
 
 namespace KolibSoft.Catalogue.Core;
 
-public class Page<T> : IPage<T>
+public class Page<T>
 {
     public T[] Items { get; init; } = Array.Empty<T>();
     public int PageIndex { get; init; } = 0;

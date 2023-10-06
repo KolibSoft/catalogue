@@ -1,5 +1,6 @@
 using KolibSoft.Catalogue.Core.Abstractions;
 using KolibSoft.Catalogue.Core.Utils;
+using static KolibSoft.Catalogue.Core.Constants;
 
 namespace KolibSoft.Catalogue.Core.Catalogues;
 
@@ -11,7 +12,7 @@ public class ServiceCatalogue<TItem, TFilters> : ICatalogueConnector<TItem, TFil
     public ICatalogueConnector<TItem, TFilters> RemoteConnector { get; }
     public virtual bool Available => RemoteConnector.Available || LocalConnector.Available;
 
-    public IDictionary<Guid, string[]?> Changes { get; }
+    public IDictionary<Guid, string[]> Changes { get; }
 
     public virtual async Task Sync()
     {
@@ -23,17 +24,17 @@ public class ServiceCatalogue<TItem, TFilters> : ICatalogueConnector<TItem, TFil
             catch (Exception e) { Console.WriteLine(e.Message); }
     }
 
-    public virtual async Task<Result<Page<TItem>?>> PageAsync(TFilters? filters = default)
+    public virtual async Task<Result<Page<TItem>?>> QueryAsync(TFilters? filters = default, int pageIndex = 0, int pageSize = DefaultChunkSize)
     {
         if (RemoteConnector.Available)
             try
             {
-                var result = await RemoteConnector.PageAsync(filters);
+                var result = await RemoteConnector.QueryAsync(filters, pageIndex, pageSize);
                 if (result.Data?.Items.Any() == true) foreach (var item in result.Data.Items) await LocalConnector.SyncItem(item.Id, item);
                 return result;
             }
             catch (Exception e) { Console.WriteLine(e.Message); }
-        return await LocalConnector.PageAsync(filters);
+        return await LocalConnector.QueryAsync(filters, pageIndex, pageSize);
     }
 
     public virtual async Task<Result<TItem?>> GetAsync(Guid id)
@@ -42,62 +43,62 @@ public class ServiceCatalogue<TItem, TFilters> : ICatalogueConnector<TItem, TFil
             try
             {
                 var result = await RemoteConnector.GetAsync(id);
-                if (result.Errors == null) await LocalConnector.SyncItem(id, result.Data);
+                if (result.Ok) await LocalConnector.SyncItem(id, result.Data);
                 return result;
             }
             catch (Exception e) { Console.WriteLine(e.Message); }
         return await LocalConnector.GetAsync(id);
     }
 
-    public virtual async Task<Result<Guid?>> InsertAsync(TItem item)
+    public virtual async Task<Result<TItem?>> InsertAsync(TItem item)
     {
-        Result<Guid?> result;
+        Result<TItem?> result;
         if (RemoteConnector.Available)
             try
             {
                 result = await RemoteConnector.InsertAsync(item);
-                if (result.Data != null) await GetAsync(result.Data.Value);
+                if (result.Ok) await LocalConnector.SyncItem(item.Id, result.Data);
                 return result;
             }
             catch (Exception e) { Console.WriteLine(e.Message); }
         result = await LocalConnector.InsertAsync(item);
-        if (result.Data != null) Changes[result.Data.Value] = null;
+        if (result.Ok) Changes[item.Id] = Array.Empty<string>();
         return result;
     }
 
-    public virtual async Task<Result<bool?>> UpdateAsync(Guid id, TItem item)
+    public virtual async Task<Result<TItem?>> UpdateAsync(Guid id, TItem item)
     {
-        Result<bool?> result;
+        Result<TItem?> result;
         if (RemoteConnector.Available)
             try
             {
                 result = await RemoteConnector.UpdateAsync(id, item);
-                if (result.Data == true) await GetAsync(id);
+                if (result.Ok) await LocalConnector.SyncItem(id, result.Data);
                 return result;
             }
             catch (Exception e) { Console.WriteLine(e.Message); }
         result = await LocalConnector.UpdateAsync(id, item);
-        if (result.Data == true) Changes[id] = null;
+        if (result.Ok) Changes[id] = Array.Empty<string>();
         return result;
     }
 
-    public virtual async Task<Result<bool?>> DeleteAsync(Guid id)
+    public virtual async Task<Result<TItem?>> DeleteAsync(Guid id)
     {
-        Result<bool?> result;
+        Result<TItem?> result;
         if (RemoteConnector.Available)
             try
             {
                 result = await RemoteConnector.DeleteAsync(id);
-                if (result.Data == true) await GetAsync(id);
+                if (result.Ok) await LocalConnector.SyncItem(id, result.Data);
                 return result;
             }
             catch (Exception e) { Console.WriteLine(e.Message); }
         result = await LocalConnector.DeleteAsync(id);
-        if (result.Data == true) Changes[id] = null;
+        if (result.Ok) Changes[id] = Array.Empty<string>();
         return result;
     }
 
-    public ServiceCatalogue(ICatalogueConnector<TItem, TFilters> localConnector, ICatalogueConnector<TItem, TFilters> remoteConnector, IDictionary<Guid, string[]?> changes)
+    public ServiceCatalogue(ICatalogueConnector<TItem, TFilters> localConnector, ICatalogueConnector<TItem, TFilters> remoteConnector, IDictionary<Guid, string[]> changes)
     {
         LocalConnector = localConnector;
         RemoteConnector = remoteConnector;
