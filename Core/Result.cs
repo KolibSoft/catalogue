@@ -6,8 +6,8 @@ namespace KolibSoft.Catalogue.Core;
 public struct Result<T>
 {
 
-    public T? Data { get; } = default;
-    public string[] Errors { get; } = Array.Empty<string>();
+    public T? Data { get; init; } = default;
+    public string[] Errors { get; init; } = Array.Empty<string>();
 
     [JsonIgnore]
     public bool Ok => Errors.Length == 0;

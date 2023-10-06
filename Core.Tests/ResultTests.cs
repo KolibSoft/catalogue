@@ -1,3 +1,4 @@
+using System.Text.Json;
 using KolibSoft.Catalogue.Core;
 
 namespace Core.Tests;
@@ -23,4 +24,22 @@ public class ResultTests
         Assert.IsTrue(result.Data == null);
         Assert.IsTrue(result.Errors.SequenceEqual(new string[] { "ERROR", "ERROR" }));
     }
+
+    [Test]
+    public void Serialization()
+    {
+        Result<decimal?> result = default;
+        result = 123m;
+        var json = JsonSerializer.Serialize(result);
+        var parsed = JsonSerializer.Deserialize<Result<decimal?>>(json);
+        Assert.AreEqual(result.Data, parsed.Data);
+        Assert.AreEqual(result.Errors, parsed.Errors);
+
+        result = new string[] { "ERROR", "ERROR" };
+        json = JsonSerializer.Serialize(result);
+        parsed = JsonSerializer.Deserialize<Result<decimal?>>(json);
+        Assert.AreEqual(result.Data, parsed.Data);
+        Assert.AreEqual(result.Errors, parsed.Errors);
+    }
+
 }
