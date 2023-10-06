@@ -21,9 +21,9 @@ class DbSet {
      * @param {(item: T) => boolean} selector 
      * @returns {Promise<T[]>}
      */
-    filter(selector) {
+    filterAsync(selector) {
         return new Promise(async (resolve, reject) => {
-            let idb = await this.#dbContext.open();
+            let idb = await this.#dbContext.openAsync();
             let transaction = idb.transaction([this.#name], "readwrite");
             let store = transaction.objectStore(this.#name);
             let request = store.openCursor();
@@ -52,9 +52,9 @@ class DbSet {
      * @param {any} id 
      * @returns {Promise<T>}
      */
-    get(id) {
+    getAsync(id) {
         return new Promise(async (resolve, reject) => {
-            let idb = await this.#dbContext.open();
+            let idb = await this.#dbContext.openAsync();
             let transaction = idb.transaction([this.#name], "readwrite");
             let store = transaction.objectStore(this.#name);
             let request = store.get(id);
@@ -74,9 +74,9 @@ class DbSet {
      * @param {T} item 
      * @returns {Promise<void>}
      */
-    add(item) {
+    addAsync(item) {
         return new Promise(async (resolve, reject) => {
-            let idb = await this.#dbContext.open();
+            let idb = await this.#dbContext.openAsync();
             let transaction = idb.transaction([this.#name], "readwrite");
             let store = transaction.objectStore(this.#name);
             let request = store.add(item);
@@ -95,9 +95,9 @@ class DbSet {
      * @param {T} item 
      * @returns {Promise<void>}
      */
-    update(item) {
+    updateAsync(item) {
         return new Promise(async (resolve, reject) => {
-            let idb = await this.#dbContext.open();
+            let idb = await this.#dbContext.openAsync();
             let transaction = idb.transaction([this.#name], "readwrite");
             let store = transaction.objectStore(this.#name);
             let request = store.put(item);
@@ -116,9 +116,9 @@ class DbSet {
      * @param {any} id 
      * @returns {Promise<void>}
      */
-    remove(id) {
+    removeAsync(id) {
         return new Promise(async (resolve, reject) => {
-            let idb = await this.#dbContext.open();
+            let idb = await this.#dbContext.openAsync();
             let transaction = idb.transaction([this.#name], "readwrite");
             let store = transaction.objectStore(this.#name);
             let request = store.delete(id);

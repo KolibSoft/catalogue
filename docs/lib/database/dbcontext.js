@@ -23,7 +23,7 @@ class DbContext {
     /**
      * @returns {Promise<IDBDatabase>}
      */
-    open() {
+    openAsync() {
         return new Promise((resolve, reject) => {
             let request = indexedDB.open(this.#name, this.#version);
             request.onupgradeneeded = event => {
