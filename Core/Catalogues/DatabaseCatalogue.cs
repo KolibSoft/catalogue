@@ -54,7 +54,6 @@ public class DatabaseCatalogue<TItem, TFilters> : ICatalogueConnector<TItem, TFi
         var original = DbSet.FirstOrDefault(x => x.Id == id);
         if (original == null) return default(TItem?);
         if (!await OnValidateUpdateAsync(item)) return Errors.ToArray();
-        if (original.ModifiedAt <= item.ModifiedAt) original.Update(item);
         DbSet.Update(item);
         DbContext.SaveChanges();
         return original;
@@ -70,6 +69,8 @@ public class DatabaseCatalogue<TItem, TFilters> : ICatalogueConnector<TItem, TFi
         DbContext.SaveChanges();
         return item;
     }
+
+    public virtual Task<Result<TItem?>> SyncAsync(Guid id, TItem? item) => this.SyncItem(id, item);
 
     public DatabaseCatalogue(DbContext dbContext)
     {

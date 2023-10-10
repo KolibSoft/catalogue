@@ -13,4 +13,6 @@ public interface ICatalogueConnector<TItem, in TFilters>
     public Task<Result<TItem?>> UpdateAsync(Guid id, TItem item);
     public Task<Result<TItem?>> DeleteAsync(Guid id);
 
+    public Task<Result<TItem?>> SyncAsync(Guid id, TItem? item);
+
 }
