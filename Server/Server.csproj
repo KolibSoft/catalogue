@@ -9,7 +9,7 @@
   <PropertyGroup>
     <PackageId>KolibSoft.Catalogue.Server</PackageId>
     <AssemblyName>KolibSoft.Catalogue.Server</AssemblyName>
-    <PackageVersion>4.0.0</PackageVersion>
+    <PackageVersion>4.0.1</PackageVersion>
     <Authors>Kolib Software</Authors>
     <Copyright>Kolib Software</Copyright>
     <RepositoryUrl>https://github.com/KolibSoft/catalogue</RepositoryUrl>
@@ -22,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="KolibSoft.Catalogue.Core" Version="4.1.0-b" />
+    <PackageReference Include="KolibSoft.Catalogue.Core" Version="4.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
   </ItemGroup>
 
