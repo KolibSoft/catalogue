@@ -75,7 +75,7 @@ public class ServiceCatalogue<TItem, TFilters> : ICatalogueConnector<TItem, TFil
             }
             catch (Exception e) { Console.WriteLine(e.Message); }
         result = await LocalConnector.InsertAsync(item);
-        if (result.Ok) Changes.Add(new Change(item.Id));
+        if (result.Ok && !Changes.Any(x => x.Id == item.Id)) Changes.Add(new Change(item.Id));
         return result;
     }
 
@@ -91,7 +91,7 @@ public class ServiceCatalogue<TItem, TFilters> : ICatalogueConnector<TItem, TFil
             }
             catch (Exception e) { Console.WriteLine(e.Message); }
         result = await LocalConnector.UpdateAsync(id, item);
-        if (result.Ok) Changes.Add(new Change(id));
+        if (result.Ok && !Changes.Any(x => x.Id == id)) Changes.Add(new Change(id));
         return result;
     }
 
@@ -107,7 +107,7 @@ public class ServiceCatalogue<TItem, TFilters> : ICatalogueConnector<TItem, TFil
             }
             catch (Exception e) { Console.WriteLine(e.Message); }
         result = await LocalConnector.DeleteAsync(id);
-        if (result.Ok) Changes.Add(new Change(id));
+        if (result.Ok && !Changes.Any(x => x.Id == id)) Changes.Add(new Change(id));
         return result;
     }
 

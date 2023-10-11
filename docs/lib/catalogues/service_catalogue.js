@@ -109,7 +109,7 @@ class ServiceCatalogue extends CatalogueConnector {
             }
             catch (error) { console.log(error); }
         result = await this.#localConnector.insertAsync(item);
-        if (result.ok) this.#changes.push(new Change({ id: item.id }));
+        if (result.ok && !this.#changes.find(x => x.id == item.id)) this.#changes.push(new Change({ id: item.id }));
         return result;
     }
 
@@ -128,7 +128,7 @@ class ServiceCatalogue extends CatalogueConnector {
             }
             catch (error) { console.log(error); }
         result = await this.#localConnector.updateAsync(id, item);
-        if (result.ok) this.#changes.push(new Change({ id: id }));
+        if (result.ok && !this.#changes.find(x => x.id == id)) this.#changes.push(new Change({ id: id }));
         return result;
     }
 
@@ -146,7 +146,7 @@ class ServiceCatalogue extends CatalogueConnector {
             }
             catch (error) { console.log(error); }
         result = await this.#localConnector.deleteAsync(id);
-        if (result.ok) this.#changes.push(new Change({ id: id }));
+        if (result.ok && !this.#changes.find(x => x.id == id)) this.#changes.push(new Change({ id: id }));
         return result;
     }
 
