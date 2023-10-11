@@ -9,7 +9,7 @@
   <PropertyGroup>
     <PackageId>KolibSoft.Catalogue.Client</PackageId>
     <AssemblyName>KolibSoft.Catalogue.Client</AssemblyName>
-    <PackageVersion>4.0.1</PackageVersion>
+    <PackageVersion>4.0.2</PackageVersion>
     <Authors>Kolib Software</Authors>
     <Copyright>Kolib Software</Copyright>
     <RepositoryUrl>https://github.com/KolibSoft/catalogue</RepositoryUrl>
@@ -22,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="KolibSoft.Catalogue.Core" Version="4.1.1" />
+    <PackageReference Include="KolibSoft.Catalogue.Core" Version="4.1.2" />
   </ItemGroup>
 
 </Project>
