@@ -102,7 +102,7 @@ public class ServiceCatalogue<TItem, TFilters> : ICatalogueConnector<TItem, TFil
             try
             {
                 result = await RemoteConnector.DeleteAsync(id);
-                if (result.Ok) await OnSyncLocalAsync(id, result.Data);
+                if (result.Ok) await OnSyncLocalAsync(id, default);
                 return result;
             }
             catch (Exception e) { Console.WriteLine(e.Message); }
