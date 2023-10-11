@@ -54,11 +54,8 @@ public class DatabaseCatalogue<TItem, TFilters> : ICatalogueConnector<TItem, TFi
         var original = DbSet.FirstOrDefault(x => x.Id == id);
         if (original == null) return default(TItem?);
         if (!await OnValidateUpdateAsync(item)) return Errors.ToArray();
-        if (item.ModifiedAt >= original.ModifiedAt)
-        {
-            DbSet.Update(item);
-            DbContext.SaveChanges();
-        }
+        DbSet.Update(item);
+        DbContext.SaveChanges();
         return original;
     }
 
