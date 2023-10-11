@@ -17,7 +17,7 @@ var connector = new ServiceCatalogue<SettingsModel, object>(
     changes
 );
 
-await connector.Sync();
+await connector.SyncChangesAsync();
 await InsertMany();
 
 var page = await connector.QueryAsync();
