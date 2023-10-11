@@ -12,10 +12,13 @@ class Page {
     /** @type {number} */
     pageCount;
 
+    /**
+     * @param {{items: T[], pageIndex: number, pageCount: number}} json 
+     */
     constructor(json) {
-        this.items = json?.items ?? null;
-        this.pageIndex = json?.pageIndex ?? null;
-        this.pageCount = json?.pageCount ?? null;
+        this.items = json?.items ?? [];
+        this.pageIndex = json?.pageIndex ?? 0;
+        this.pageCount = json?.pageCount ?? 0;
     }
 
 }

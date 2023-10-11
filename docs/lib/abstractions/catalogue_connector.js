@@ -14,32 +14,32 @@ class CatalogueConnector {
 
     /**
      * @param {TFilters} filters 
-     * @returns {Promise<Result<Page<TItem>>>}
+     * @returns {Promise<Result<Page<TItem>?>>}
      */
     async pageAsync(filters = null) { throw new Error("Not implemented"); }
 
     /**
      * @param {string} id 
-     * @returns {Promise<Result<TItem>>}
+     * @returns {Promise<Result<TItem?>>}
      */
     async getAsync(id) { throw new Error("Not implemented"); }
 
     /**
      * @param {TItem} item 
-     * @returns {Promise<Result<string>>}
+     * @returns {Promise<Result<TItem?>>}
      */
     async insertAsync(item) { throw new Error("Not implemented"); }
 
     /**
      * @param {string} id 
      * @param {TItem} item 
-     * @returns {Promise<Result<boolean>>}
+     * @returns {Promise<Result<TItem?>>}
      */
     async updateAsync(id, item) { throw new Error("Not implemented"); }
 
     /**
      * @param {string} id 
-     * @returns {Promise<Result<boolean>>}
+     * @returns {Promise<Result<TItem?>>}
      */
     async deleteAsync(id) { throw new Error("Not implemented"); }
 

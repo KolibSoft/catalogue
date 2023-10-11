@@ -1,4 +1,3 @@
-import { CatalogueFilters } from "./catalogue_filters.js";
 import { Page } from "./page.js";
 import { Result } from "./result.js";
 import { QueryStringSerializer } from "./querystring_serializer.js";
@@ -34,11 +33,13 @@ class CatalogueService {
     get available() { return navigator.onLine; }
 
     /**
-     * @param {TFilters} filters 
-     * @returns {Promise<Result<Page<TItem>>>}
+     * @param {TFilters?} filters 
+     * @param {number} pageIndex 
+     * @param {number} pageSize 
+     * @returns {Promise<Result<Page<TItem>?>>}
      */
-    async pageAsync(filters = null) {
-        let uri = `${this.#uri}${QueryStringSerializer.serialize(filters)}`;
+    async queryAsync(filters = null, pageIndex = 0, pageSize = DefaultChunkSize) {
+        let uri = `${this.#uri}${QueryStringSerializer.serialize(filters)}&pageIndex=${pageIndex}&pageSize=${pageSize}`;
         let response = await this.#fetch(uri, {
             method: "GET"
         });
@@ -49,7 +50,7 @@ class CatalogueService {
 
     /**
      * @param {string} id 
-     * @returns {Promise<Result<TItem>>}
+     * @returns {Promise<Result<TItem?>>}
      */
     async getAsync(id) {
         let uri = `${this.#uri}/${id}`;
@@ -63,7 +64,7 @@ class CatalogueService {
 
     /**
      * @param {TItem} item 
-     * @returns {Promise<Result<string>>}
+     * @returns {Promise<Result<TItem?>>}
      */
     async insertAsync(item) {
         let uri = `${this.#uri}`;
@@ -75,13 +76,14 @@ class CatalogueService {
             body: JSON.stringify(item)
         });
         let result = await ResultUtils.handleResult(response);
+        if (this.#creator && result.data) result.data = this.#creator(result.data);
         return result;
     }
 
     /**
      * @param {string} id 
      * @param {TItem} item 
-     * @returns {Promise<Result<boolean>>}
+     * @returns {Promise<Result<TItem?>>}
      */
     async updateAsync(id, item) {
         let uri = `${this.#uri}/${id}`;
@@ -93,12 +95,13 @@ class CatalogueService {
             body: JSON.stringify(item)
         });
         let result = await ResultUtils.handleResult(response);
+        if (this.#creator && result.data) result.data = this.#creator(result.data);
         return result;
     }
 
     /**
      * @param {string} id 
-     * @returns {Promise<Result<boolean>>}
+     * @returns {Promise<Result<TItem?>>}
      */
     async deleteAsync(id) {
         let uri = `${this.#uri}/${id}`;
@@ -106,11 +109,12 @@ class CatalogueService {
             method: "DELETE"
         });
         let result = await ResultUtils.handleResult(response);
+        if (this.#creator && result.data) result.data = this.#creator(result.data);
         return result;
     }
 
     /**
-     * @param {(json: {}) => TItem} creator
+     * @param {(json: TItem) => TItem} creator
      * @param {{(input: RequestInfo | URL, init?: RequestInit | undefined) => Promise<Response>}} fetch 
      * @param {string} uri 
      */

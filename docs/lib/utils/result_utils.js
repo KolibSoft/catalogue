@@ -9,6 +9,7 @@ class ResultUtils {
     static async handleResult(response) {
         try {
             let result = new Result(await response.json());
+            if(result != null) result = new Result(result);
             return result;
         }
         catch (error) { console.log(error); }
