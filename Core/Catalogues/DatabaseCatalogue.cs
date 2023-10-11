@@ -70,8 +70,6 @@ public class DatabaseCatalogue<TItem, TFilters> : ICatalogueConnector<TItem, TFi
         return item;
     }
 
-    public virtual Task<Result<TItem?>> SyncAsync(Guid id, TItem? item) => this.SyncItem(id, item);
-
     public DatabaseCatalogue(DbContext dbContext)
     {
         DbContext = dbContext;

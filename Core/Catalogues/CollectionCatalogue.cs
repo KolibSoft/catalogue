@@ -65,8 +65,6 @@ public class CollectionCatalogue<TItem, TFilters> : ICatalogueConnector<TItem, T
         return item;
     }
 
-    public virtual Task<Result<TItem?>> SyncAsync(Guid id, TItem? item) => this.SyncItem(id, item);
-
     public CollectionCatalogue(ICollection<TItem>? collection = default)
     {
         Collection = collection ?? new List<TItem>();

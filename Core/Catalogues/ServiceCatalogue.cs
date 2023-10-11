@@ -14,6 +14,9 @@ public class ServiceCatalogue<TItem, TFilters> : ICatalogueConnector<TItem, TFil
 
     public ICollection<Change> Changes { get; }
 
+    protected virtual Task<Result<TItem?>> OnSyncRemoteAsync(Guid id, TItem? item) => RemoteConnector.SyncItem(id, item);
+    protected virtual Task<Result<TItem?>> OnSyncLocalAsync(Guid id, TItem? item) => LocalConnector.SyncItem(id, item);
+
     public virtual async Task SyncChangesAsync()
     {
         if (RemoteConnector.Available)
@@ -22,10 +25,10 @@ public class ServiceCatalogue<TItem, TFilters> : ICatalogueConnector<TItem, TFil
                 foreach (var change in Changes.ToArray())
                 {
                     var get_result = await LocalConnector.GetAsync(change.Id);
-                    var sync_result = await RemoteConnector.SyncAsync(change.Id, get_result.Data);
+                    var sync_result = await OnSyncRemoteAsync(change.Id, get_result.Data);
                     if (sync_result.Ok)
                     {
-                        await LocalConnector.SyncAsync(change.Id, sync_result.Data);
+                        await OnSyncLocalAsync(change.Id, sync_result.Data);
                         Changes.Remove(change);
                     }
                     else change.Errors = sync_result.Errors;
@@ -40,7 +43,7 @@ public class ServiceCatalogue<TItem, TFilters> : ICatalogueConnector<TItem, TFil
             try
             {
                 var result = await RemoteConnector.QueryAsync(filters, pageIndex, pageSize);
-                if (result.Data?.Items.Any() == true) foreach (var item in result.Data.Items) await LocalConnector.SyncAsync(item.Id, item);
+                if (result.Data?.Items.Any() == true) foreach (var item in result.Data.Items) await OnSyncLocalAsync(item.Id, item);
                 return result;
             }
             catch (Exception e) { Console.WriteLine(e.Message); }
@@ -53,7 +56,7 @@ public class ServiceCatalogue<TItem, TFilters> : ICatalogueConnector<TItem, TFil
             try
             {
                 var result = await RemoteConnector.GetAsync(id);
-                if (result.Ok) await LocalConnector.SyncAsync(id, result.Data);
+                if (result.Ok) await OnSyncLocalAsync(id, result.Data);
                 return result;
             }
             catch (Exception e) { Console.WriteLine(e.Message); }
@@ -67,7 +70,7 @@ public class ServiceCatalogue<TItem, TFilters> : ICatalogueConnector<TItem, TFil
             try
             {
                 result = await RemoteConnector.InsertAsync(item);
-                if (result.Ok) await LocalConnector.SyncAsync(item.Id, result.Data);
+                if (result.Ok) await OnSyncLocalAsync(item.Id, result.Data);
                 return result;
             }
             catch (Exception e) { Console.WriteLine(e.Message); }
@@ -83,7 +86,7 @@ public class ServiceCatalogue<TItem, TFilters> : ICatalogueConnector<TItem, TFil
             try
             {
                 result = await RemoteConnector.UpdateAsync(id, item);
-                if (result.Ok) await LocalConnector.SyncAsync(id, result.Data);
+                if (result.Ok) await OnSyncLocalAsync(id, result.Data);
                 return result;
             }
             catch (Exception e) { Console.WriteLine(e.Message); }
@@ -99,7 +102,7 @@ public class ServiceCatalogue<TItem, TFilters> : ICatalogueConnector<TItem, TFil
             try
             {
                 result = await RemoteConnector.DeleteAsync(id);
-                if (result.Ok) await LocalConnector.SyncAsync(id, result.Data);
+                if (result.Ok) await OnSyncLocalAsync(id, result.Data);
                 return result;
             }
             catch (Exception e) { Console.WriteLine(e.Message); }
@@ -107,8 +110,6 @@ public class ServiceCatalogue<TItem, TFilters> : ICatalogueConnector<TItem, TFil
         if (result.Ok) Changes.Add(new Change(id));
         return result;
     }
-
-    public virtual Task<Result<TItem?>> SyncAsync(Guid id, TItem? item) => this.SyncItem(id, item);
 
     public ServiceCatalogue(ICatalogueConnector<TItem, TFilters> localConnector, ICatalogueConnector<TItem, TFilters> remoteConnector, ICollection<Change> changes)
     {
