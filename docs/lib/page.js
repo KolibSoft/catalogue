@@ -13,7 +13,7 @@ class Page {
     pageCount;
 
     /**
-     * @param {{items: T[], pageIndex: number, pageCount: number}} json 
+     * @param {Page} json 
      */
     constructor(json) {
         this.items = json?.items ?? [];

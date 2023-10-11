@@ -27,7 +27,7 @@ class QueryStringSerializer {
             }
         }
         let queryString = params.toString();
-        if (queryString.length > 0) return `?${queryString}`;
+        if (queryString.length > 0) return `${queryString}`;
         return "";
     }
 

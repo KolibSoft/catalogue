@@ -12,7 +12,7 @@ class Result {
     get ok() { return this.errors.length == 0; }
 
     /**
-     * @param {{data: string?, errors: string[]}} json 
+     * @param {Result} json 
      */
     constructor(json) {
         this.data = json?.data ?? null;

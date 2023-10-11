@@ -103,7 +103,6 @@ class DatabaseCatalogue extends CatalogueConnector {
         this.#errors = [];
         if (!item.validate(this.#errors)) return new Result({ errors: this.#errors });
         let original = await this.#dbSet.getAsync(item.id);
-        if (this.#creator) original = this.#creator(original);
         if (original != null) return new Result({ data: null });
         if (!(await this.onValidateInsertAsync(item))) return new Result({ errors: this.#errors });
         await this.#dbSet.addAsync(item);
@@ -123,6 +122,7 @@ class DatabaseCatalogue extends CatalogueConnector {
         if (this.#creator) original = this.#creator(original);
         if (!(await this.onValidateUpdateAsync(item))) return new Result({ errors: this.#errors });
         original.update(item);
+        await this.#dbSet.updateAsync(item);
         return new Result({ data: original });
     }
 

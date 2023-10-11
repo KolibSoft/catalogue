@@ -39,7 +39,7 @@ class CatalogueService {
      * @returns {Promise<Result<Page<TItem>?>>}
      */
     async queryAsync(filters = null, pageIndex = 0, pageSize = DefaultChunkSize) {
-        let uri = `${this.#uri}${QueryStringSerializer.serialize(filters)}&pageIndex=${pageIndex}&pageSize=${pageSize}`;
+        let uri = `${this.#uri}?${QueryStringSerializer.serialize(filters)}&pageIndex=${pageIndex}&pageSize=${pageSize}`;
         let response = await this.#fetch(uri, {
             method: "GET"
         });

@@ -6,21 +6,21 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace KolibSoft.Catalogue.Server.Example;
 
-public class SettingsModel : IItem, IValidatable, IUpdatable<SettingsModel>
+public class SettingsModel : Item, IValidatable, IUpdatable<SettingsModel>
 {
 
-    public Guid Id { get; set; } = Guid.NewGuid();
     public string Value { get; set; } = string.Empty;
     public bool Active { get; set; } = true;
-    public DateTime ModifiedAt { get; set; } = DateTime.UtcNow;
 
-    public bool Validate(ICollection<string>? errors = default)
+    public override bool Validate(ICollection<string>? errors = default)
     {
-        Value = Value.Trim();
-        var invalid = false;
-        if (invalid = Id == Guid.Empty) errors?.Add(Constants.InvalidId);
-        if (invalid = Value == string.Empty) errors?.Add("INVALID_VALUE");
-        return !invalid;
+        var valid = base.Validate(errors);
+        if (string.IsNullOrWhiteSpace(Value))
+        {
+            errors?.Add("EMPTY_VALUE");
+            valid = false;
+        }
+        return valid;
     }
 
     public void Update(SettingsModel newState)

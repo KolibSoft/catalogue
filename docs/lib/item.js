@@ -1,5 +1,4 @@
 import { InvalidId, InvalidModification, NoGuid } from "./constants.js";
-import { UTCUtils } from "./utils/utc_utils.js";
 
 class Item {
 
@@ -10,10 +9,10 @@ class Item {
     modifiedAt;
 
     /**
-     * @param {string[]} errors 
+     * @param {string[]?} errors 
      * @returns {boolean}
      */
-    validate(errors) {
+    validate(errors = null) {
         let valid = true;
         if (this.id == NoGuid) {
             errors?.push(InvalidId);

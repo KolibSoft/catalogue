@@ -7,12 +7,12 @@ class Change {
     errors;
 
     /**
-     * @param {{}} json 
+     * @param {Change} json 
      */
     constructor(json) {
         this.id = json?.id ?? null;
         this.errors = json?.errors ?? [];
-        if (!id) throw Error("Id can not be null");
+        if (!this.id) throw Error("Id can not be null");
     }
 
 }

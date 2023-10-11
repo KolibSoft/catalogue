@@ -1,4 +1,3 @@
-import { CatalogueFilters } from "../catalogue_filters.js";
 import { Page } from "../page.js";
 import { Result } from "../result.js";
 
@@ -13,10 +12,12 @@ class CatalogueConnector {
     get available() { throw new Error("Not implemented"); }
 
     /**
-     * @param {TFilters} filters 
-     * @returns {Promise<Result<Page<TItem>?>>}
-     */
-    async pageAsync(filters = null) { throw new Error("Not implemented"); }
+       * @param {TFilters?} filters 
+       * @param {number} pageIndex 
+       * @param {number} pageSize 
+       * @returns {Promise<Result<Page<TItem>?>>}
+       */
+    async queryAsync(filters = null, pageIndex = 0, pageSize = DefaultChunkSize) { throw new Error("Not implemented"); }
 
     /**
      * @param {string} id 
