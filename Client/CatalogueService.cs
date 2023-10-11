@@ -16,7 +16,7 @@ public class CatalogueService<TItem, TFilters> : ICatalogueConnector<TItem, TFil
 
     public virtual async Task<Result<Page<TItem>?>> QueryAsync(TFilters? filters = default, int pageIndex = 0, int pageSize = DefaultChunkSize)
     {
-        var uri = $"{Uri}{QueryStringSerializer.Serialize(filters)}&pageIndex={pageIndex}&pageSize={pageSize}";
+        var uri = $"{Uri}?{QueryStringSerializer.Serialize(filters)}&pageIndex={pageIndex}&pageSize={pageSize}";
         var response = await HttpClient.GetAsync(uri);
         var result = await response.HandleResult<Page<TItem>?>();
         return result;

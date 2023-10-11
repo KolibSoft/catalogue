@@ -66,7 +66,7 @@ public static class QueryStringSerializer
     {
         if (obj == null) return string.Empty;
         var stringComponent = SerializeComponent(obj, type);
-        if (stringComponent != string.Empty) return $"?value={stringComponent}";
+        if (stringComponent != string.Empty) return $"value={stringComponent}";
         //
         if (type.GetInterfaces().Any(x => x == typeof(IEnumerable)))
         {
@@ -100,7 +100,7 @@ public static class QueryStringSerializer
             }
         }
         if (parameters.Count == 0) return string.Empty;
-        var queryString = $"?{string.Join("&", parameters)}";
+        var queryString = $"{string.Join("&", parameters)}";
         return queryString;
     }
 
