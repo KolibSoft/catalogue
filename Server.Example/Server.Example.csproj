@@ -5,7 +5,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="KolibSoft.Catalogue.Core" Version="4.0.0" />
+    <PackageReference Include="KolibSoft.Catalogue.Core" Version="4.1.0-b" />
   </ItemGroup>
 
   <PropertyGroup>

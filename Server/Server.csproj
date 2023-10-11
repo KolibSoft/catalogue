@@ -22,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="KolibSoft.Catalogue.Core" Version="4.0.0" />
+    <PackageReference Include="KolibSoft.Catalogue.Core" Version="4.1.0-b" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
   </ItemGroup>
 
